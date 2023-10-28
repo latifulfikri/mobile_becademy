@@ -46,7 +46,7 @@ class ThemeClass {
         ),
         foregroundColor: Colors.white,
       )
-    )
+    ),
   );
   static ThemeData darkTheme = ThemeData(
     appBarTheme: AppBarTheme(
