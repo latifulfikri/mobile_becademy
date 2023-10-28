@@ -87,15 +87,23 @@ class _MainPageState extends State<MainPage> {
       ),
       body:Stack(
         children: [
-          SafeArea(
-            child: ListView(
-              children: [
-                _container[_bottomNavigationCurrentIndex],
-                SizedBox(
-                  height: 120,
-                )
-              ],
-            ),
+          // SafeArea(
+          //   child: ListView(
+          //     children: [
+          //       _container[_bottomNavigationCurrentIndex],
+          //       SizedBox(
+          //         height: 120,
+          //       )
+          //     ],
+          //   ),
+          // ),
+          ListView(
+            children: [
+              _container[_bottomNavigationCurrentIndex],
+              SizedBox(
+                height: 120,
+              )
+            ],
           ),
           // bottom nav bar
           Column(
