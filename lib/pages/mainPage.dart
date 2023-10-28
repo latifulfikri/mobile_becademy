@@ -163,7 +163,6 @@ class _MainPageState extends State<MainPage> {
                   setState(() {
                     _bottomNavigationCurrentIndex = index;
                   });
-                  print("Current index change");
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
