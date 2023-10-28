@@ -75,7 +75,7 @@ class _MainHomePageState extends State<MainHomePage> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: Colors.black
+                    foregroundColor: Theme.of(context).primaryColor,
                   ),
                   child: Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
@@ -239,7 +239,12 @@ class _MainHomePageState extends State<MainHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
                   Padding(padding: EdgeInsets.only(bottom: 8)),
                   Row(
                     children: [
@@ -252,8 +257,7 @@ class _MainHomePageState extends State<MainHomePage> {
                         child: Text(
                           category,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900
+                            color: Colors.white
                           ),
                         ),
                       ),

@@ -56,7 +56,12 @@ class _MainPageState extends State<MainPage> {
         ),
         elevation: 0,
         centerTitle: false,
-        title: Text(" ${_title[_bottomNavigationCurrentIndex]}"),
+        title: Text(
+          " ${_title[_bottomNavigationCurrentIndex]}",
+          style: TextStyle(
+            fontWeight: FontWeight.w900
+          ),
+        ),
         actions: [
           GestureDetector(
             onTap: () => {

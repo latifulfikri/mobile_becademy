@@ -42,8 +42,9 @@ class ThemeClass {
         elevation: 0,
         shadowColor: Colors.transparent,
         textStyle: TextStyle(
-          fontWeight: FontWeight.bold
-        )
+          fontWeight: FontWeight.bold,
+        ),
+        foregroundColor: Colors.white,
       )
     )
   );
@@ -73,8 +74,9 @@ class ThemeClass {
         elevation: 0,
         shadowColor: Colors.transparent,
         textStyle: TextStyle(
-          fontWeight: FontWeight.bold
-        )
+          fontWeight: FontWeight.bold,
+        ),
+        foregroundColor: Colors.white,
       )
     )
   );
