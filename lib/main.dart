@@ -1,4 +1,5 @@
 import 'package:becademy/pages/auth/login.dart';
+import 'package:becademy/pages/course/courseDetail.dart';
 import 'package:becademy/pages/mainPage.dart';
 import 'package:becademy/theme.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeClass.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
+      home: const CourseDetailPage(),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
