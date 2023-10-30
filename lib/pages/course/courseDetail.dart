@@ -220,34 +220,39 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   ],
                 ),
                 Padding(padding: EdgeInsets.only(bottom: 16)),
-                Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      child: Image.asset("assets/brand/logo.png",width: 50,height: 50,fit: BoxFit.cover,),
-                    ),
-                    Padding(padding: EdgeInsets.only(right: 16)),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Tutor Name",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold
-                            ),
-                          ),
-                          Padding(padding: EdgeInsets.only(bottom: 4)),
-                          Text(
-                            "Ocupation",
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )
+                tutorItemWidget("Tutor name", "Teaching Assistant")
               ],
             ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget tutorItemWidget(String name, String occupation)
+  {
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: Image.asset("assets/brand/logo.png",width: 50,height: 50,fit: BoxFit.cover,),
+        ),
+        Padding(padding: EdgeInsets.only(right: 16)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              Padding(padding: EdgeInsets.only(bottom: 4)),
+              Text(
+                occupation,
+              ),
+            ],
           ),
         )
       ],
