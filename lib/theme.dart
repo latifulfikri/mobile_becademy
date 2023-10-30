@@ -47,6 +47,11 @@ class ThemeClass {
         foregroundColor: Colors.white,
       )
     ),
+    inputDecorationTheme: InputDecorationTheme(
+      iconColor:_themeClass.lightTextAppBarColor,
+      suffixIconColor: _themeClass.lightTextAppBarColor,
+      prefixIconColor: _themeClass.lightTextAppBarColor
+    ),
   );
   static ThemeData darkTheme = ThemeData(
     appBarTheme: AppBarTheme(
@@ -78,7 +83,12 @@ class ThemeClass {
         ),
         foregroundColor: Colors.white,
       )
-    )
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      iconColor:_themeClass.darkTextAppBarColor,
+      suffixIconColor: _themeClass.darkTextAppBarColor,
+      prefixIconColor: _themeClass.darkTextAppBarColor
+    ),
   );
 }
 
