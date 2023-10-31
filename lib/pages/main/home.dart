@@ -1,7 +1,11 @@
 import 'dart:ui';
 
+import 'package:becademy/apiController/categoryController.dart';
+import 'package:becademy/model/categoryModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class MainHomePage extends StatefulWidget {
   const MainHomePage({super.key});
@@ -11,14 +15,87 @@ class MainHomePage extends StatefulWidget {
 }
 
 class _MainHomePageState extends State<MainHomePage> {
+
+  List<CategoryModel> categories = [];
+  CategoryController categoryApi = CategoryController();
+
+  Future<void> getCategories() async {
+    categories.clear();
+    categories = await categoryApi.get();
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void initState() {
+    getCategories();
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Column(
+    return new Container(
+      child: CustomScrollView(
+        slivers: [
+          const SliverAppBar(
+            pinned: false,
+            floating: false,
+            title: Padding(padding: EdgeInsets.all(16), child: Text("Hi, Nick", style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24
+            ),),),
+            forceMaterialTransparency: false,
+            centerTitle: false,
+            // flexibleSpace: ClipRect(
+            //   child: BackdropFilter(
+            //     filter: ImageFilter.blur(
+            //       sigmaX: 20,
+            //       sigmaY: 20,
+            //     ),
+            //     child: Container(
+            //       color: Colors.transparent,
+            //     ),
+            //   ),
+            // ),
+            elevation: 0,
+          ),
+          CupertinoSliverRefreshControl(
+            onRefresh: getCategories,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                mainWidget(),
+                categoryWidget(),
+                searchWidget(),
+                recomendationWidget(),
+                SizedBox(
+                  height: 160,
+                )
+              ]
+            )
+          )
+        ],
+      ),
+    );(
       children: [
-        mainWidget(),
-        categoryWidget(),
-        searchWidget(),
-        recomendationWidget(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
+              child: Text("Hi, Nick",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            
+          ],
+        )
       ],
     );
   }
@@ -32,7 +109,7 @@ class _MainHomePageState extends State<MainHomePage> {
               color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(24)
             ),
-            margin: EdgeInsets.fromLTRB(24, 24, 24, 0),
+            margin: EdgeInsets.fromLTRB(24, 0, 24, 0),
             padding: EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +148,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 Padding(padding: EdgeInsets.only(bottom: 16)),
                 ElevatedButton(
                   onPressed: () => {
-
+                    context.go("/course")
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -99,60 +176,132 @@ class _MainHomePageState extends State<MainHomePage> {
       children: [
         Expanded(
           child: Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: 0,
-              vertical: 0
-            ),
             child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(24, 24, 0, 24),
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.all(24),
               child: Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      "CLI",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ),
-                  SizedBox(
-                    width: 24,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Website",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ),
-                  SizedBox(
-                    width: 24,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Database",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ),
-                  SizedBox(
-                    width: 24,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: Text(
-                      "Mobile",
-                      style: TextStyle(color: Colors.white),
-                    )
-                  )
-                ],
+                children: List.generate(categories.length, (index){
+                  return Container(
+                    padding: EdgeInsets.only(right: 24),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Icon(FontAwesomeIcons.mobile),
+                          Text(
+                            categories[index].name,
+                            style: TextStyle(color: Colors.white),
+                          )
+                        ],
+                      )
+                    ),
+                  );
+                }),
               ),
-            )
+            ),
           ),
         )
       ],
     );
   }
+
+  // Widget categoryWidget() {
+  //   return Row(
+  //     children: [
+  //       Expanded(
+  //         // child: ListView.separated(
+  //         //   shrinkWrap: true,
+  //         //   scrollDirection: Axis.horizontal,
+  //         //   itemBuilder: (context, index) {
+  //         //     return ElevatedButton(
+  //         //       onPressed: () {},
+  //         //       child: Text(
+  //         //         "CLI",
+  //         //         style: TextStyle(color: Colors.white),
+  //         //       )
+  //         //     );
+  //         //   },
+  //         //   separatorBuilder: (context, index) {
+  //         //     return SizedBox(
+  //         //       width: 24,
+  //         //     );
+  //         //   },
+  //         //   itemCount: categories.length
+  //         // )
+  //         child: Container(
+  //           padding: EdgeInsets.symmetric(
+  //             horizontal: 0,
+  //             vertical: 0
+  //           ),
+  //           child: SingleChildScrollView(
+  //             scrollDirection: Axis.horizontal,
+  //             padding: const EdgeInsets.all(24),
+  //             child: Row(
+  //               children: [
+  //                 ListView.separated(
+  //                   itemBuilder: (context, index) {
+  //                     return ElevatedButton(
+  //                       onPressed: () {},
+  //                       child: Text(
+  //                         "CLI",
+  //                         style: TextStyle(color: Colors.white),
+  //                       )
+  //                     );
+  //                   },
+  //                   separatorBuilder: (context, index) {
+  //                     return SizedBox(
+  //                       width: 24,
+  //                     );
+  //                   },
+  //                   itemCount: categories.length)
+  //               ],
+  //               children: [
+  //                 ElevatedButton(
+  //                   onPressed: () {},
+  //                   child: Text(
+  //                     "CLI",
+  //                     style: TextStyle(color: Colors.white),
+  //                   )
+  //                 ),
+  //                 SizedBox(
+  //                   width: 24,
+  //                 ),
+  //                 ElevatedButton(
+  //                   onPressed: () {},
+  //                   child: Text(
+  //                     "Website",
+  //                     style: TextStyle(color: Colors.white),
+  //                   )
+  //                 ),
+  //                 SizedBox(
+  //                   width: 24,
+  //                 ),
+  //                 ElevatedButton(
+  //                   onPressed: () {},
+  //                   child: Text(
+  //                     "Database",
+  //                     style: TextStyle(color: Colors.white),
+  //                   )
+  //                 ),
+  //                 SizedBox(
+  //                   width: 24,
+  //                 ),
+  //                 ElevatedButton(
+  //                   onPressed: () {},
+  //                   child: Text(
+  //                     "Mobile",
+  //                     style: TextStyle(color: Colors.white),
+  //                   )
+  //                 )
+  //               ],
+  //             ),
+  //           )
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
   Widget searchWidget() {
     return new Row(

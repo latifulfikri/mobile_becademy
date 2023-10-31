@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,14 +10,55 @@ class MainProfilePage extends StatefulWidget {
 }
 
 class _MainProfilePageState extends State<MainProfilePage> {
+
+  Future<void> get() async {
+
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Column(
-      children: [
-        mainProfile(),
-        discordButton(),
-        profileSettings(),
-      ],
+    return new Container(
+      child: CustomScrollView(
+        slivers: [
+          const SliverAppBar(
+            pinned: false,
+            floating: true,
+            title: Padding(padding: EdgeInsets.all(16), child: Text("Kelasku", style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24
+            ),),),
+            centerTitle: false,
+            
+            // flexibleSpace: ClipRect(
+            //   child: BackdropFilter(
+            //     filter: ImageFilter.blur(
+            //       sigmaX: 20,
+            //       sigmaY: 20,
+            //     ),
+            //     child: Container(
+            //       color: Colors.transparent,
+            //     ),
+            //   ),
+            // ),
+            elevation: 0,
+          ),
+          CupertinoSliverRefreshControl(
+            onRefresh: get,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                mainProfile(),
+                discordButton(),
+                profileSettings(),
+                const SizedBox(
+                  height: 160,
+                )
+              ]
+            ),
+          )
+        ],
+      ),
     );
   }
 

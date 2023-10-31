@@ -1,6 +1,4 @@
-import 'package:becademy/pages/auth/login.dart';
-import 'package:becademy/pages/course/courseDetail.dart';
-import 'package:becademy/pages/mainPage.dart';
+import 'package:becademy/router/go_router_provider.dart';
 import 'package:becademy/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +9,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -18,13 +17,13 @@ class MyApp extends StatelessWidget {
         DeviceOrientation.portraitUp
       ]
     );
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return MaterialApp.router(
+      title: 'Becademy',
       theme: ThemeClass.lightTheme,
       darkTheme: ThemeClass.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const CourseDetailPage(),
+      routerConfig: AppNavigation.goRouterProvider,
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }

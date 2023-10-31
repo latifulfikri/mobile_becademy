@@ -6,15 +6,19 @@ import 'package:becademy/pages/main/notification.dart';
 import 'package:becademy/pages/main/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  const MainPage({
+    super.key,
+    required this.body});
+  final StatefulNavigationShell body;
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {  
+class _MainPageState extends State<MainPage> { 
   int _bottomNavigationCurrentIndex = 0;
 
   final List<IconData> _bottomNavItem = [
@@ -31,80 +35,72 @@ class _MainPageState extends State<MainPage> {
     "Profil"
   ];
 
-  List<Widget> _container = [
-    MainHomePage(),
-    MainCoursePage(),
-    MainNotificationPage(),
-    MainProfilePage()
-  ];
+  void _goToBranch(int index)
+  {
+    widget.body.goBranch(
+      index,
+      initialLocation: index == widget.body.currentIndex
+    );
+  }
+
+  // List<Widget> _container = [
+  //   MainHomePage(),
+  //   MainCoursePage(),
+  //   MainNotificationPage(),
+  //   MainProfilePage()
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    var uri = GoRouter.of(context).routeInformationProvider.value.uri;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 20,
-              sigmaY: 20,
-            ),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
-        elevation: 0,
-        centerTitle: false,
-        title: Text(
-          " ${_title[_bottomNavigationCurrentIndex]}",
-          style: TextStyle(
-            fontWeight: FontWeight.w900
-          ),
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () => {
-
-            },
-            child: Container(
-              margin: EdgeInsets.fromLTRB(0, 8, 20, 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(100)
-              ),
-              padding: EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8
-              ),
-              child: Icon(
-                FontAwesomeIcons.solidUser,
-                size: 16,
-              ),
-            ),
-          )
-        ],
-      ),
+      // appBar: AppBar(
+      //   flexibleSpace: ClipRect(
+      //     child: BackdropFilter(
+      //       filter: ImageFilter.blur(
+      //         sigmaX: 20,
+      //         sigmaY: 20,
+      //       ),
+      //       child: Container(
+      //         color: Colors.transparent,
+      //       ),
+      //     ),
+      //   ),
+      //   elevation: 0,
+      //   centerTitle: false,
+      //   title: Text(
+      //     " ${_title[_bottomNavigationCurrentIndex]}",
+      //     style: TextStyle(
+      //       fontWeight: FontWeight.w900
+      //     ),
+      //   ),
+      //   actions: [
+      //     GestureDetector(
+      //       onTap: () => {
+      //         context.go("/login")
+      //       },
+      //       child: Container(
+      //         margin: EdgeInsets.fromLTRB(0, 8, 20, 8),
+      //         decoration: BoxDecoration(
+      //           color: Theme.of(context).colorScheme.primary,
+      //           borderRadius: BorderRadius.circular(100)
+      //         ),
+      //         padding: EdgeInsets.symmetric(
+      //           horizontal: 14,
+      //           vertical: 8
+      //         ),
+      //         child: Icon(
+      //           FontAwesomeIcons.solidUser,
+      //           size: 16,
+      //         ),
+      //       ),
+      //     )
+      //   ],
+      // ),
       body:Stack(
         children: [
-          // SafeArea(
-          //   child: ListView(
-          //     children: [
-          //       _container[_bottomNavigationCurrentIndex],
-          //       SizedBox(
-          //         height: 120,
-          //       )
-          //     ],
-          //   ),
-          // ),
-          ListView(
-            children: [
-              _container[_bottomNavigationCurrentIndex],
-              SizedBox(
-                height: 120,
-              )
-            ],
-          ),
+          widget.body,
           // bottom nav bar
           Column(
             children: [
@@ -134,7 +130,7 @@ class _MainPageState extends State<MainPage> {
     Color iconColor = Theme.of(context).colorScheme.tertiary;
     Color iconColorActive = Theme.of(context).colorScheme.secondary;
 
-    return new SafeArea(
+    return SafeArea(
       child: Container(
         padding: EdgeInsets.symmetric(
           vertical: 24,
@@ -163,6 +159,7 @@ class _MainPageState extends State<MainPage> {
                   setState(() {
                     _bottomNavigationCurrentIndex = index;
                   });
+                  _goToBranch(_bottomNavigationCurrentIndex);
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -181,6 +178,7 @@ class _MainPageState extends State<MainPage> {
                       width: 32,
                       child: Icon(
                         _bottomNavItem[index],
+                        // color: iconColor,
                         color: _bottomNavigationCurrentIndex == index ? iconColorActive : iconColor,
                       ),
                     ),

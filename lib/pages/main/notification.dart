@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -9,14 +10,55 @@ class MainNotificationPage extends StatefulWidget {
 }
 
 class _MainNotificationPageState extends State<MainNotificationPage> {
+
+  Future<void> get() async {
+    
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Column(
-      children: [
-        notificationItem(true, "Rekomendasi", DateTime.now(),"Selesaikan course Dasar Pemrograman Menggunakan Bahasa C course 3 sebelum tanggal 31 Agustus 2023"),
-        notificationItem(false, "Pembayaran", DateTime.now(),"Pembayaran course Membuat Landing Page berhasil"),
-        notificationItem(false, "Pembayaran", DateTime.now(),"Pembayaran course Dasar Database Menggunakan MySQL berhasil"),
-      ],
+    return new Container(
+      child: CustomScrollView(
+        slivers: [
+          const SliverAppBar(
+            pinned: false,
+            floating: true,
+            title: Padding(padding: EdgeInsets.all(16), child: Text("Notifikasi", style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 24
+            ),),),
+            centerTitle: false,
+            
+            // flexibleSpace: ClipRect(
+            //   child: BackdropFilter(
+            //     filter: ImageFilter.blur(
+            //       sigmaX: 20,
+            //       sigmaY: 20,
+            //     ),
+            //     child: Container(
+            //       color: Colors.transparent,
+            //     ),
+            //   ),
+            // ),
+            elevation: 0,
+          ),
+          CupertinoSliverRefreshControl(
+            onRefresh: get,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                notificationItem(true, "Rekomendasi", DateTime.now(),"Selesaikan course Dasar Pemrograman Menggunakan Bahasa C course 3 sebelum tanggal 31 Agustus 2023"),
+                notificationItem(false, "Pembayaran", DateTime.now(),"Pembayaran course Membuat Landing Page berhasil"),
+                notificationItem(false, "Pembayaran", DateTime.now(),"Pembayaran course Dasar Database Menggunakan MySQL berhasil"),
+                const SizedBox(
+                  height: 160,
+                )
+              ]
+            ),
+          )
+        ],
+      ),
     );
   }
 

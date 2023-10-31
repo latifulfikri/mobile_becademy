@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -143,7 +144,9 @@ class _LoginPageState extends State<LoginPage> {
             style: ElevatedButton.styleFrom(
               minimumSize: Size.fromHeight(50)
             ),
-            onPressed: (){},
+            onPressed: (){
+              context.go("/");
+            },
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
