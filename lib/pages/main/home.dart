@@ -1,11 +1,13 @@
 import 'dart:ui';
 
 import 'package:becademy/apiController/categoryController.dart';
+import 'package:becademy/main.dart';
 import 'package:becademy/model/categoryModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainHomePage extends StatefulWidget {
   const MainHomePage({super.key});
@@ -39,28 +41,6 @@ class _MainHomePageState extends State<MainHomePage> {
     return new Container(
       child: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            pinned: false,
-            floating: false,
-            title: Padding(padding: EdgeInsets.all(16), child: Text("Hi, Nick", style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24
-            ),),),
-            forceMaterialTransparency: false,
-            centerTitle: false,
-            // flexibleSpace: ClipRect(
-            //   child: BackdropFilter(
-            //     filter: ImageFilter.blur(
-            //       sigmaX: 20,
-            //       sigmaY: 20,
-            //     ),
-            //     child: Container(
-            //       color: Colors.transparent,
-            //     ),
-            //   ),
-            // ),
-            elevation: 0,
-          ),
           CupertinoSliverRefreshControl(
             onRefresh: getCategories,
           ),
@@ -79,24 +59,6 @@ class _MainHomePageState extends State<MainHomePage> {
           )
         ],
       ),
-    );(
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-              child: Text("Hi, Nick",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            
-          ],
-        )
-      ],
     );
   }
 
@@ -147,8 +109,8 @@ class _MainHomePageState extends State<MainHomePage> {
                 ),
                 Padding(padding: EdgeInsets.only(bottom: 16)),
                 ElevatedButton(
-                  onPressed: () => {
-                    context.go("/course")
+                  onPressed: () {
+                    GoRouter.of(context).push("/course-detail");
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -206,103 +168,6 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  // Widget categoryWidget() {
-  //   return Row(
-  //     children: [
-  //       Expanded(
-  //         // child: ListView.separated(
-  //         //   shrinkWrap: true,
-  //         //   scrollDirection: Axis.horizontal,
-  //         //   itemBuilder: (context, index) {
-  //         //     return ElevatedButton(
-  //         //       onPressed: () {},
-  //         //       child: Text(
-  //         //         "CLI",
-  //         //         style: TextStyle(color: Colors.white),
-  //         //       )
-  //         //     );
-  //         //   },
-  //         //   separatorBuilder: (context, index) {
-  //         //     return SizedBox(
-  //         //       width: 24,
-  //         //     );
-  //         //   },
-  //         //   itemCount: categories.length
-  //         // )
-  //         child: Container(
-  //           padding: EdgeInsets.symmetric(
-  //             horizontal: 0,
-  //             vertical: 0
-  //           ),
-  //           child: SingleChildScrollView(
-  //             scrollDirection: Axis.horizontal,
-  //             padding: const EdgeInsets.all(24),
-  //             child: Row(
-  //               children: [
-  //                 ListView.separated(
-  //                   itemBuilder: (context, index) {
-  //                     return ElevatedButton(
-  //                       onPressed: () {},
-  //                       child: Text(
-  //                         "CLI",
-  //                         style: TextStyle(color: Colors.white),
-  //                       )
-  //                     );
-  //                   },
-  //                   separatorBuilder: (context, index) {
-  //                     return SizedBox(
-  //                       width: 24,
-  //                     );
-  //                   },
-  //                   itemCount: categories.length)
-  //               ],
-  //               children: [
-  //                 ElevatedButton(
-  //                   onPressed: () {},
-  //                   child: Text(
-  //                     "CLI",
-  //                     style: TextStyle(color: Colors.white),
-  //                   )
-  //                 ),
-  //                 SizedBox(
-  //                   width: 24,
-  //                 ),
-  //                 ElevatedButton(
-  //                   onPressed: () {},
-  //                   child: Text(
-  //                     "Website",
-  //                     style: TextStyle(color: Colors.white),
-  //                   )
-  //                 ),
-  //                 SizedBox(
-  //                   width: 24,
-  //                 ),
-  //                 ElevatedButton(
-  //                   onPressed: () {},
-  //                   child: Text(
-  //                     "Database",
-  //                     style: TextStyle(color: Colors.white),
-  //                   )
-  //                 ),
-  //                 SizedBox(
-  //                   width: 24,
-  //                 ),
-  //                 ElevatedButton(
-  //                   onPressed: () {},
-  //                   child: Text(
-  //                     "Mobile",
-  //                     style: TextStyle(color: Colors.white),
-  //                   )
-  //                 )
-  //               ],
-  //             ),
-  //           )
-  //         ),
-  //       )
-  //     ],
-  //   );
-  // }
-
   Widget searchWidget() {
     return new Row(
       children: [
@@ -316,6 +181,10 @@ class _MainHomePageState extends State<MainHomePage> {
               borderRadius: BorderRadius.circular(16)
             ),
             child: TextField(
+              onTap: () {
+                context.push('/course');
+              },
+              textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                 prefixIcon: Padding(
                   padding: EdgeInsets.all(16),

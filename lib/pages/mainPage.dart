@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:becademy/main.dart';
 import 'package:becademy/pages/main/course.dart';
 import 'package:becademy/pages/main/home.dart';
 import 'package:becademy/pages/main/notification.dart';
@@ -7,12 +8,12 @@ import 'package:becademy/pages/main/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({
     super.key,
-    required this.body});
-  final StatefulNavigationShell body;
+  });
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -35,72 +36,80 @@ class _MainPageState extends State<MainPage> {
     "Profil"
   ];
 
-  void _goToBranch(int index)
-  {
-    widget.body.goBranch(
-      index,
-      initialLocation: index == widget.body.currentIndex
-    );
+  // void _goToBranch(int index)
+  // {
+  //   widget.body.goBranch(
+  //     index,
+  //     initialLocation: index == widget.body.currentIndex
+  //   );
+  // }
+
+  Future getJwt() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+    if (await jwt == null) {
+      setState(() {
+        userLogin.setData(false);
+        context.go("/login");
+      });
+    }
   }
 
-  // List<Widget> _container = [
-  //   MainHomePage(),
-  //   MainCoursePage(),
-  //   MainNotificationPage(),
-  //   MainProfilePage()
-  // ];
+  @override
+  void initState() {
+    getJwt();
+    // print(GoRouterState.of(context).uri.toString());
+    // TODO: implement initState
+    super.initState();
+  }
+
+  List<Widget> _container = [
+    MainHomePage(),
+    MainCoursePage(),
+    MainNotificationPage(),
+    MainProfilePage()
+  ];
 
   @override
   Widget build(BuildContext context) {
-    var uri = GoRouter.of(context).routeInformationProvider.value.uri;
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      // appBar: AppBar(
-      //   flexibleSpace: ClipRect(
-      //     child: BackdropFilter(
-      //       filter: ImageFilter.blur(
-      //         sigmaX: 20,
-      //         sigmaY: 20,
-      //       ),
-      //       child: Container(
-      //         color: Colors.transparent,
-      //       ),
-      //     ),
-      //   ),
-      //   elevation: 0,
-      //   centerTitle: false,
-      //   title: Text(
-      //     " ${_title[_bottomNavigationCurrentIndex]}",
-      //     style: TextStyle(
-      //       fontWeight: FontWeight.w900
-      //     ),
-      //   ),
-      //   actions: [
-      //     GestureDetector(
-      //       onTap: () => {
-      //         context.go("/login")
-      //       },
-      //       child: Container(
-      //         margin: EdgeInsets.fromLTRB(0, 8, 20, 8),
-      //         decoration: BoxDecoration(
-      //           color: Theme.of(context).colorScheme.primary,
-      //           borderRadius: BorderRadius.circular(100)
-      //         ),
-      //         padding: EdgeInsets.symmetric(
-      //           horizontal: 14,
-      //           vertical: 8
-      //         ),
-      //         child: Icon(
-      //           FontAwesomeIcons.solidUser,
-      //           size: 16,
-      //         ),
-      //       ),
-      //     )
-      //   ],
-      // ),
+      extendBodyBehindAppBar: false,
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: false,
+        title: Text(
+          " ${_title[_bottomNavigationCurrentIndex]}",
+          style: TextStyle(
+            fontWeight: FontWeight.w900
+          ),
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () => {
+              context.go("/login")
+            },
+            child: Container(
+              margin: EdgeInsets.fromLTRB(0, 8, 20, 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(100)
+              ),
+              padding: EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 8
+              ),
+              child: Icon(
+                FontAwesomeIcons.solidUser,
+                size: 16,
+                color: Colors.white,
+              ),
+            ),
+          )
+        ],
+      ),
       body:Stack(
         children: [
-          widget.body,
+          _container[_bottomNavigationCurrentIndex],
           // bottom nav bar
           Column(
             children: [
@@ -117,7 +126,7 @@ class _MainPageState extends State<MainPage> {
             child: Column(
               children: [
                 Spacer(),
-                _bottomNavigationBar()
+                _bottomNavigationBar(context)
               ],
             ),
           )
@@ -126,7 +135,9 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Widget _bottomNavigationBar() {
+  Widget _bottomNavigationBar(context) {
+    String pageNow = GoRouterState.of(context).uri.toString();
+
     Color iconColor = Theme.of(context).colorScheme.tertiary;
     Color iconColorActive = Theme.of(context).colorScheme.secondary;
 
@@ -159,7 +170,6 @@ class _MainPageState extends State<MainPage> {
                   setState(() {
                     _bottomNavigationCurrentIndex = index;
                   });
-                  _goToBranch(_bottomNavigationCurrentIndex);
                 },
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -178,7 +188,6 @@ class _MainPageState extends State<MainPage> {
                       width: 32,
                       child: Icon(
                         _bottomNavItem[index],
-                        // color: iconColor,
                         color: _bottomNavigationCurrentIndex == index ? iconColorActive : iconColor,
                       ),
                     ),
@@ -196,6 +205,171 @@ class _MainPageState extends State<MainPage> {
                 )
               )
             )
+
+            // GestureDetector(
+            //     onTap: () {
+            //       setState(() {
+            //         _bottomNavigationCurrentIndex = 0;
+            //       });
+            //       _goToBranch(_bottomNavigationCurrentIndex);
+            //     },
+            //     child: Column(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: pageNow == '/' ? 24:0,
+            //           height: pageNow == '/' ? 8:0,
+            //           margin: EdgeInsets.only(bottom: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Theme.of(context).colorScheme.secondary,
+            //           ),
+            //         ),
+            //         SizedBox(
+            //           width: 32,
+            //           child: Icon(
+            //             _bottomNavItem[0],
+            //             // color: iconColor,
+            //             color: pageNow == '/' ? iconColorActive : iconColor,
+            //           ),
+            //         ),
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: 24,
+            //           height: pageNow == '/' ? 0:8,
+            //           margin: EdgeInsets.only(top: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Colors.transparent,
+            //           ),
+            //         ),
+            //       ],
+            //     )
+            //   ),
+            //   GestureDetector(
+            //     onTap: () {
+            //       setState(() {
+            //         _bottomNavigationCurrentIndex = 1;
+            //       });
+            //       _goToBranch(_bottomNavigationCurrentIndex);
+            //     },
+            //     child: Column(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: pageNow == '/course' ? 24:0,
+            //           height: pageNow == '/course' ? 8:0,
+            //           margin: EdgeInsets.only(bottom: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Theme.of(context).colorScheme.secondary,
+            //           ),
+            //         ),
+            //         SizedBox(
+            //           width: 32,
+            //           child: Icon(
+            //             _bottomNavItem[1],
+            //             // color: iconColor,
+            //             color: pageNow == '/course' ? iconColorActive : iconColor,
+            //           ),
+            //         ),
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: 24,
+            //           height: pageNow == '/course' ? 0:8,
+            //           margin: EdgeInsets.only(top: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Colors.transparent,
+            //           ),
+            //         ),
+            //       ],
+            //     )
+            //   ),
+            //   GestureDetector(
+            //     onTap: () {
+            //       setState(() {
+            //         _bottomNavigationCurrentIndex = 2;
+            //       });
+            //       _goToBranch(_bottomNavigationCurrentIndex);
+            //     },
+            //     child: Column(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: pageNow == '/notification' ? 24:0,
+            //           height: pageNow == '/notification' ? 8:0,
+            //           margin: EdgeInsets.only(bottom: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Theme.of(context).colorScheme.secondary,
+            //           ),
+            //         ),
+            //         SizedBox(
+            //           width: 32,
+            //           child: Icon(
+            //             _bottomNavItem[2],
+            //             // color: iconColor,
+            //             color: pageNow == '/notification' ? iconColorActive : iconColor,
+            //           ),
+            //         ),
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: 24,
+            //           height: pageNow == '/notification' ? 0:8,
+            //           margin: EdgeInsets.only(top: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Colors.transparent,
+            //           ),
+            //         ),
+            //       ],
+            //     )
+            //   ),
+            //   GestureDetector(
+            //     onTap: () {
+            //       setState(() {
+            //         _bottomNavigationCurrentIndex = 3;
+            //       });
+            //       _goToBranch(_bottomNavigationCurrentIndex);
+            //     },
+            //     child: Column(
+            //       mainAxisSize: MainAxisSize.min,
+            //       children: [
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: pageNow == '/profile' ? 24:0,
+            //           height: pageNow == '/profile' ? 8:0,
+            //           margin: EdgeInsets.only(bottom: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Theme.of(context).colorScheme.secondary,
+            //           ),
+            //         ),
+            //         SizedBox(
+            //           width: 32,
+            //           child: Icon(
+            //             _bottomNavItem[3],
+            //             // color: iconColor,
+            //             color: pageNow == '/profile' ? iconColorActive : iconColor,
+            //           ),
+            //         ),
+            //         AnimatedContainer(
+            //           duration: Duration(milliseconds: 200),
+            //           width: 24,
+            //           height: pageNow == '/profile' ? 0:8,
+            //           margin: EdgeInsets.only(top: 8),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(5),
+            //             color: Colors.transparent,
+            //           ),
+            //         ),
+            //       ],
+            //     )
+            //   )
           ],
         ),
       )

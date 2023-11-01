@@ -23,7 +23,9 @@ class ThemeClass {
         color: _themeClass.lightTextAppBarColor,
         fontWeight: FontWeight.bold,
         fontSize: 18
-      )
+      ),
+      iconTheme: IconThemeData(color: _themeClass.lightTextAppBarColor),
+      actionsIconTheme: IconThemeData(color: _themeClass.lightTextAppBarColor)
     ),
     scaffoldBackgroundColor: _themeClass.lightBackgroundColor,
     primaryColor: _themeClass.lightPrimaryColor,

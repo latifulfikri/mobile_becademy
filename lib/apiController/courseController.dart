@@ -1,16 +1,13 @@
 import 'dart:convert';
 
-import 'package:becademy/apiController/categoryController.dart';
-import 'package:becademy/model/categoryModel.dart';
+import 'package:becademy/main.dart';
 import 'package:becademy/model/courseModel.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class CourseController {
-  final baseApiUrl = "https://becademy.fikriyuwi.com/api/";
   Future get() async {
     try {
-      final response = await http.get(Uri.parse(baseApiUrl+"course"));
+      final response = await http.get(Uri.parse(SERVER_API+"course"));
       if (response.statusCode == 200) {
         Map<String,dynamic> course = jsonDecode(response.body);
         // Iterable courseData = jsonDecode(course['data']);
@@ -26,4 +23,15 @@ class CourseController {
       print(e.toString());
     }
   }
+
+  Future getCourse(String slug) async {
+    try {
+      final response = await http.get(Uri.parse(SERVER_API+"course/"+slug));
+      Map<String,dynamic> res = jsonDecode(response.body);
+      return res;
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
 }

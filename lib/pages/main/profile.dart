@@ -1,6 +1,9 @@
+import 'package:becademy/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainProfilePage extends StatefulWidget {
   const MainProfilePage({super.key});
@@ -20,28 +23,16 @@ class _MainProfilePageState extends State<MainProfilePage> {
     return new Container(
       child: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            pinned: false,
-            floating: true,
-            title: Padding(padding: EdgeInsets.all(16), child: Text("Kelasku", style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24
-            ),),),
-            centerTitle: false,
-            
-            // flexibleSpace: ClipRect(
-            //   child: BackdropFilter(
-            //     filter: ImageFilter.blur(
-            //       sigmaX: 20,
-            //       sigmaY: 20,
-            //     ),
-            //     child: Container(
-            //       color: Colors.transparent,
-            //     ),
-            //   ),
-            // ),
-            elevation: 0,
-          ),
+          // const SliverAppBar(
+          //   pinned: false,
+          //   floating: true,
+          //   title: Padding(padding: EdgeInsets.all(16), child: Text("Kelasku", style: TextStyle(
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 24
+          //   ),),),
+          //   centerTitle: false,
+          //   elevation: 0,
+          // ),
           CupertinoSliverRefreshControl(
             onRefresh: get,
           ),
@@ -51,6 +42,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
                 mainProfile(),
                 discordButton(),
                 profileSettings(),
+                Padding(padding: EdgeInsets.only(bottom: 16)),
+                accountAction(),
                 const SizedBox(
                   height: 160,
                 )
@@ -243,6 +236,60 @@ class _MainProfilePageState extends State<MainProfilePage> {
           profileSettingButton(FontAwesomeIcons.cartShopping, "Pesanan"),
           profileSettingButton(FontAwesomeIcons.shield, "Keamanan"),
           profileSettingButton(FontAwesomeIcons.solidClipboard, "Aturan & Layanan"),
+        ],
+      ),
+    );
+  }
+
+  Widget accountAction() {
+    return new Container(
+      margin: EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        children: [
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.secondary,
+            ),
+            onPressed: () async {
+              SharedPreferences preferences = await SharedPreferences.getInstance();
+              preferences.remove('jwt');
+              setState(() {
+                userLogin.setData(false);
+              });
+              context.go('login');
+            },
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.doorOpen,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(padding: EdgeInsets.only(right: 16)),
+                Expanded(
+                  child: Text("Keluar"),
+                ),
+                Icon(FontAwesomeIcons.angleRight)
+              ],
+            )
+          )
         ],
       ),
     );

@@ -4,6 +4,8 @@ import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class MainCoursePage extends StatefulWidget {
@@ -28,8 +30,6 @@ class _MainCoursePageState extends State<MainCoursePage> {
   @override
   void initState() {
     getCourses();
-    // print(courses[0].category.name);
-    // TODO: implement initState
     super.initState();
   }
 
@@ -76,17 +76,18 @@ class _MainCoursePageState extends State<MainCoursePage> {
   {
     return LiquidPullToRefresh(
       onRefresh: getCourses,
-      height: MediaQuery.of(context).size.height/2,
-      backgroundColor: Theme.of(context).primaryColor,
-      color: Theme.of(context).scaffoldBackgroundColor,
+      height: 100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      color: Theme.of(context).primaryColor,
       animSpeedFactor: 2,
       borderWidth: 2,
+      showChildOpacityTransition: true,
       child: ListView.separated(
         itemBuilder: (context,index) {
           return courseItem(courses[index]);
         },
         separatorBuilder: (context,index) {
-          return const SizedBox(height: 16,);
+          return const SizedBox(height: 0,);
         },
         itemCount: courses.length
       ),
@@ -98,28 +99,6 @@ class _MainCoursePageState extends State<MainCoursePage> {
     return new Container(
       child: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            pinned: false,
-            floating: true,
-            title: Padding(padding: EdgeInsets.all(16), child: Text("Kelasku", style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24
-            ),),),
-            centerTitle: false,
-            
-            // flexibleSpace: ClipRect(
-            //   child: BackdropFilter(
-            //     filter: ImageFilter.blur(
-            //       sigmaX: 20,
-            //       sigmaY: 20,
-            //     ),
-            //     child: Container(
-            //       color: Colors.transparent,
-            //     ),
-            //   ),
-            // ),
-            elevation: 0,
-          ),
           CupertinoSliverRefreshControl(
             onRefresh: getCourses,
           ),
@@ -128,12 +107,33 @@ class _MainCoursePageState extends State<MainCoursePage> {
               (context,index) {
                 return courseItem(courses[index]);
               },
-              childCount: courses.length
+              childCount: courses.length > 3 ? 3 : courses.length
             ),
           ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(24),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            context.push("/course");
+                          },
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text("Lihat semua course")
+                            ],
+                          )
+                        ),
+                      ),
+                    )
+                  ],
+                ),
                 const SizedBox(
                   height: 160,
                 )
@@ -141,19 +141,6 @@ class _MainCoursePageState extends State<MainCoursePage> {
             ),
           )
         ],
-      ),
-    );
-  }
-
-  Widget androidWidget()
-  {
-    return new RefreshIndicator(
-      onRefresh: getCourses,
-      child: ListView.builder(
-        itemBuilder: (context, index) {
-          return courseItem(courses[index]);
-        },
-        itemCount: courses.length,
       ),
     );
   }

@@ -1,6 +1,13 @@
+import 'dart:convert';
+
+import 'package:becademy/main.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/quickalert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,6 +18,80 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool passwordVisible=false;
+
+  Future getJwt() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+    if (await jwt != null) {
+      setState(() {
+        userLogin.setData(true);
+        context.go("/");
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getJwt();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<bool> loginAuth(String email, String password) async {
+    var res = await http.post(
+      Uri.parse(SERVER_API+"login"),
+      body: {
+        "email": email,
+        "password": password,
+      }
+    );
+      Map<String,dynamic> body = jsonDecode(res.body);
+      if (res.statusCode == 200) {
+        // secstorage.write(key: 'jwt', value: body['access_token']);
+        SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+        sharedPreferences.setString('jwt', body['access_token']);
+        setState(() {
+          userLogin.setData(true);
+        });
+        sharedPreferences.getString('jwt');
+        return true;
+      } else {
+        List<String> errors = [];
+        if (body['data'].length > 0) {
+          body['data'].forEach((key, value) {
+            errors.add(value[0].toString());
+          });
+          displayDialog(
+            context,
+            QuickAlertType.error,
+            errors[0]
+          );
+        } else {
+          displayDialog(
+            context,
+            QuickAlertType.error,
+            body['message']
+          );
+        }
+        return false;
+      }
+  }
+
+  void displayDialog(BuildContext context, QuickAlertType type, String text) {
+    QuickAlert.show(
+      context: context,
+      type: type,
+      text: text,
+      confirmBtnColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+      titleColor: Theme.of(context).colorScheme.secondary,
+      textColor: Theme.of(context).colorScheme.secondary,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -35,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget pageTitle()
   {
-    return new Column(
+    return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -64,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget loginForm()
   {
-    return new Column(
+    return Column(
       children: [
         Row(
           children: [
@@ -81,6 +162,8 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(16)
                 ),
                 child: TextField(
+                  textInputAction: TextInputAction.next,
+                  controller: _emailController,
                   decoration: InputDecoration(
                     hintText: "your-email@email.com",
                     fillColor: Theme.of(context).scaffoldBackgroundColor,
@@ -110,6 +193,8 @@ class _LoginPageState extends State<LoginPage> {
                   borderRadius: BorderRadius.circular(16)
                 ),
                 child: TextField(
+                  textInputAction: TextInputAction.go,
+                  controller: _passwordController,
                   obscureText: passwordVisible == true ? false : true,
                   enableSuggestions: false,
                   autocorrect: false,
@@ -144,8 +229,14 @@ class _LoginPageState extends State<LoginPage> {
             style: ElevatedButton.styleFrom(
               minimumSize: Size.fromHeight(50)
             ),
-            onPressed: (){
-              context.go("/");
+            onPressed: () async {
+              final result = await loginAuth(_emailController.text, _passwordController.text).then((value) {
+                print(userLogin.getData());
+                if(value == true) {
+                  context.go("/");
+                }
+              });
+              
             },
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,

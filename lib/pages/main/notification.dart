@@ -20,28 +20,16 @@ class _MainNotificationPageState extends State<MainNotificationPage> {
     return new Container(
       child: CustomScrollView(
         slivers: [
-          const SliverAppBar(
-            pinned: false,
-            floating: true,
-            title: Padding(padding: EdgeInsets.all(16), child: Text("Notifikasi", style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24
-            ),),),
-            centerTitle: false,
-            
-            // flexibleSpace: ClipRect(
-            //   child: BackdropFilter(
-            //     filter: ImageFilter.blur(
-            //       sigmaX: 20,
-            //       sigmaY: 20,
-            //     ),
-            //     child: Container(
-            //       color: Colors.transparent,
-            //     ),
-            //   ),
-            // ),
-            elevation: 0,
-          ),
+          // const SliverAppBar(
+          //   pinned: false,
+          //   floating: true,
+          //   title: Padding(padding: EdgeInsets.all(16), child: Text("Notifikasi", style: TextStyle(
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 24
+          //   ),),),
+          //   centerTitle: false,
+          //   elevation: 0,
+          // ),
           CupertinoSliverRefreshControl(
             onRefresh: get,
           ),
