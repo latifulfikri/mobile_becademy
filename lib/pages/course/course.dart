@@ -248,7 +248,7 @@ class _CoursePageState extends State<CoursePage> {
                                       borderRadius: BorderRadius.circular(8)
                                     ),
                                     child: Text(
-                                      course.category.name,
+                                      course.category!.name,
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900

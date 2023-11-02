@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:becademy/main.dart';
+import 'package:becademy/model/accountModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -23,10 +24,7 @@ class _LoginPageState extends State<LoginPage> {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var jwt = sharedPreferences.getString('jwt');
     if (await jwt != null) {
-      setState(() {
-        userLogin.setData(true);
-        context.go("/");
-      });
+      setUserLoginData();
     }
   }
 
@@ -40,7 +38,35 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<bool> loginAuth(String email, String password) async {
+  Future<void> setUserLoginData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+
+    var response = await http.get(
+      Uri.parse(SERVER_API+"my/data"),
+      headers: {
+        'Authorization':'Bearer ${jwt}'
+      }
+    );
+
+    Map<String,dynamic> responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        userLoginData = AccountModel.fromJson(responseBody['data']);
+      });
+      context.go("/");
+    } else {
+      setState(() {
+        sharedPreferences.remove('jwt');
+        userLoginData = null;
+      });
+      context.go("/login");
+    }
+
+  }
+
+  Future<void> loginAuth(String email, String password) async {
     var res = await http.post(
       Uri.parse(SERVER_API+"login"),
       body: {
@@ -53,11 +79,7 @@ class _LoginPageState extends State<LoginPage> {
         // secstorage.write(key: 'jwt', value: body['access_token']);
         SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
         sharedPreferences.setString('jwt', body['access_token']);
-        setState(() {
-          userLogin.setData(true);
-        });
-        sharedPreferences.getString('jwt');
-        return true;
+        setUserLoginData();
       } else {
         List<String> errors = [];
         if (body['data'].length > 0) {
@@ -76,7 +98,6 @@ class _LoginPageState extends State<LoginPage> {
             body['message']
           );
         }
-        return false;
       }
   }
 
@@ -230,13 +251,7 @@ class _LoginPageState extends State<LoginPage> {
               minimumSize: Size.fromHeight(50)
             ),
             onPressed: () async {
-              final result = await loginAuth(_emailController.text, _passwordController.text).then((value) {
-                print(userLogin.getData());
-                if(value == true) {
-                  context.go("/");
-                }
-              });
-              
+              await loginAuth(_emailController.text, _passwordController.text);
             },
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,

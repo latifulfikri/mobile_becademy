@@ -12,7 +12,7 @@ class CourseModel {
   final int is_active;
   final String created_at;
   final String updated_at;
-  final CategoryModel category;
+  CategoryModel? category;
 
   CourseModel({
     required this.id,
@@ -26,7 +26,7 @@ class CourseModel {
     required this.is_active,
     required this.created_at,
     required this.updated_at,
-    required this.category,
+    this.category,
   });
 
   factory CourseModel.fromJson(Map<String, dynamic> json) {
@@ -43,15 +43,6 @@ class CourseModel {
       created_at: json['created_at'],
       updated_at: json['updated_at'],
       category: CategoryModel.fromJson(json['category']),
-      // category: CategoryModel(
-      //   id: json['category']['id'],
-      //   name: json['category']['name'],
-      //   slug: json['category']['slug'],
-      //   icon: json['category']['icon'],
-      //   color: json['category']['color'],
-      //   created_at: json['category']['created_at'],
-      //   updated_at: json['category']['updated_at']
-      // ),
     );
   }
 }

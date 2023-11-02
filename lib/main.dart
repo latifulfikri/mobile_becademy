@@ -1,3 +1,4 @@
+import 'package:becademy/model/accountModel.dart';
 import 'package:becademy/router/go_router_provider.dart';
 import 'package:becademy/theme.dart';
 import 'package:flutter/material.dart';
@@ -5,23 +6,24 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 var SERVER_API = "https://becademy.fikriyuwi.com/api/";
-class LoginData {
-  bool isLoggedin;
+// class LoginData {
+//   bool isLoggedin;
 
-  LoginData({
-    required this.isLoggedin
-  });
+//   LoginData({
+//     required this.isLoggedin
+//   });
 
-  void setData(bool data) {
-    isLoggedin = data;
-  }
+//   void setData(bool data) {
+//     isLoggedin = data;
+//   }
 
-  bool getData() {
-    return isLoggedin;
-  }
-}
+//   bool getData() {
+//     return isLoggedin;
+//   }
+// }
 
-LoginData userLogin = LoginData(isLoggedin: true);
+// LoginData userLogin = LoginData(isLoggedin: true);
+AccountModel? userLoginData;
 
 void main() {
   runApp(const MyApp());

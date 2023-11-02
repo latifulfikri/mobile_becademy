@@ -110,7 +110,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 Padding(padding: EdgeInsets.only(bottom: 16)),
                 ElevatedButton(
                   onPressed: () {
-                    GoRouter.of(context).push("/course-detail");
+                    GoRouter.of(context).push("/course");
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,

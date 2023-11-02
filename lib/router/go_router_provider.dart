@@ -22,17 +22,17 @@ class AppNavigation {
   static final _rootNavigatorProfile = GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
 
   static final GoRouter goRouterProvider = GoRouter(
-    redirect: (context, state) {
-      var currentPage = state.uri.toString();
+    // redirect: (context, state) {
+    //   var currentPage = state.uri.toString();
 
-      if (userLogin.getData() && currentPage == '/login') {
-        return '/';
-      }
-      if (!userLogin.getData() && currentPage != '/login') {
-        return '/login';
-      }
-      return null;
-    },
+    //   if (userLoginData != null && currentPage == '/login') {
+    //     return '/';
+    //   }
+    //   if (userLoginData == null && currentPage != '/login') {
+    //     return '/login';
+    //   }
+    //   return null;
+    // },
     navigatorKey: _rootNavigatorKey,
     initialLocation: initR,
     routes: <RouteBase>[

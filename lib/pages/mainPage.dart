@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:becademy/main.dart';
+import 'package:http/http.dart' as http;
+import 'package:becademy/model/accountModel.dart';
 import 'package:becademy/pages/main/course.dart';
 import 'package:becademy/pages/main/home.dart';
 import 'package:becademy/pages/main/notification.dart';
@@ -44,14 +47,44 @@ class _MainPageState extends State<MainPage> {
   //   );
   // }
 
+  Future<void> setUserLoginData() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+
+    var response = await http.get(
+      Uri.parse(SERVER_API+"my/data"),
+      headers: {
+        'Authorization':'Bearer ${jwt}'
+      }
+    );
+
+    Map<String,dynamic> responseBody = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        userLoginData = AccountModel.fromJson(responseBody['data']);
+      });
+      context.go("/");
+    } else {
+      setState(() {
+        sharedPreferences.remove('jwt');
+        userLoginData = null;
+      });
+      context.go("/login");
+    }
+
+  }
+
   Future getJwt() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var jwt = sharedPreferences.getString('jwt');
     if (await jwt == null) {
       setState(() {
-        userLogin.setData(false);
+        userLoginData = null;
         context.go("/login");
       });
+    } else {
+      setUserLoginData();
     }
   }
 
@@ -136,8 +169,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _bottomNavigationBar(context) {
-    String pageNow = GoRouterState.of(context).uri.toString();
-
     Color iconColor = Theme.of(context).colorScheme.tertiary;
     Color iconColorActive = Theme.of(context).colorScheme.secondary;
 

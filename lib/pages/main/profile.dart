@@ -14,8 +14,19 @@ class MainProfilePage extends StatefulWidget {
 
 class _MainProfilePageState extends State<MainProfilePage> {
 
-  Future<void> get() async {
+  var verified = false;
 
+  @override
+  void initState() {
+    if (userLoginData != null) {
+      if (userLoginData!.email_verified_at != null) {
+        setState(() {
+          verified = true;
+        });
+      }
+    }
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -33,9 +44,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
           //   centerTitle: false,
           //   elevation: 0,
           // ),
-          CupertinoSliverRefreshControl(
-            onRefresh: get,
-          ),
+          // CupertinoSliverRefreshControl(
+          //   onRefresh: get,
+          // ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
@@ -86,12 +97,13 @@ class _MainProfilePageState extends State<MainProfilePage> {
                           SizedBox(
                             height: 70,
                           ),
+                          // name
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: Text(
-                                  "Nick Nelson",
+                                  userLoginData != null ? userLoginData!.name : "",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.white,
@@ -102,12 +114,13 @@ class _MainProfilePageState extends State<MainProfilePage> {
                               ),
                             ],
                           ),
+                          // field of study
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Expanded(
                                 child: Text(
-                                  "School of Computer Science",
+                                  userLoginData != null ? userLoginData!.field_of_study : "",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.white,
@@ -116,6 +129,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                               ),
                             ],
                           ),
+                          // email
                           Row(
                             children: [
                               Expanded(
@@ -134,7 +148,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "nick.nelson@gmail.com",
+                                  userLoginData != null ? userLoginData!.email : "",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Colors.white,
@@ -159,16 +173,16 @@ class _MainProfilePageState extends State<MainProfilePage> {
                                 child: Row(
                                   children: [
                                     Text(
-                                      "Verified",
+                                      verified ? "Verified" : "Not verified",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w900,
-                                        color: Colors.green
+                                        color: verified ? Colors.green : Colors.red
                                       ),
                                     ),
                                     Padding(padding: EdgeInsets.only(right: 8)),
                                     Icon(
                                       FontAwesomeIcons.check,
-                                      color: Colors.green,
+                                      color: verified ? Colors.green : Colors.red
                                     )
                                   ],
                                 ),
@@ -259,9 +273,9 @@ class _MainProfilePageState extends State<MainProfilePage> {
               SharedPreferences preferences = await SharedPreferences.getInstance();
               preferences.remove('jwt');
               setState(() {
-                userLogin.setData(false);
+                userLoginData = null;
               });
-              context.go('login');
+              context.go('/login');
             },
             child: Row(
               children: [
