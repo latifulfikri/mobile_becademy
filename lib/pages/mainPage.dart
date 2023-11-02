@@ -58,34 +58,9 @@ class _MainPageState extends State<MainPage> {
         'Authorization':'Bearer ${jwt}'
       }
     ).then((value) {
-
       Map<String,dynamic> responseBody = jsonDecode(value.body);
 
-      if(value.statusCode == 403) {
-        print("not verified");
-        QuickAlert.show(
-          context: context,
-          type: QuickAlertType.warning,
-          text: "Your email is not verified. Click the button bellow to send email verification",
-          confirmBtnColor: Theme.of(context).primaryColor,
-          backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-          titleColor: Theme.of(context).colorScheme.secondary,
-          textColor: Theme.of(context).colorScheme.secondary,
-          onConfirmBtnTap: () async {
-            final response = await http.get(
-              Uri.parse(SERVER_API+"email/verify/resend"),
-              headers: {
-                'Authorization':'Bearer ${jwt}'
-              }
-            ).then((value){
-              print("send");
-              Navigator.pop(context);
-              displayDialog(context, QuickAlertType.success, "Verification link has been sent to your email");
-            });
-          },
-          confirmBtnText: "Send email verification"
-        );
-      } else if (value.statusCode == 200) {
+      if (value.statusCode == 200) {
         setState(() {
           userLoginData = AccountModel.fromJson(responseBody['data']);
         });
@@ -100,16 +75,17 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future getJwt() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var jwt = sharedPreferences.getString('jwt');
-    if (await jwt != null) {
-      setUserLoginData(sharedPreferences);
-    } else {
-      setState(() {
-        userLoginData = null;
+    await SharedPreferences.getInstance().then((value) {
+      var jwt = value.getString('jwt');
+      if (jwt != null) {
+        setUserLoginData(value);
+      } else {
+        setState(() {
+          userLoginData = null;
+        });
         context.go("/login");
-      });
-    }
+      }
+    });
   }
 
   void displayDialog(BuildContext context, QuickAlertType type, String text) {

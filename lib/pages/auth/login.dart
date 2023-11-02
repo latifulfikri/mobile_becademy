@@ -25,6 +25,10 @@ class _LoginPageState extends State<LoginPage> {
     var jwt = sharedPreferences.getString('jwt');
     if (await jwt != null) {
       setUserLoginData(sharedPreferences);
+    } else {
+      setState(() {
+        userLoginData = null;
+      });
     }
   }
 
@@ -66,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
           titleColor: Theme.of(context).colorScheme.secondary,
           textColor: Theme.of(context).colorScheme.secondary,
           onConfirmBtnTap: () async {
-            final response = await http.get(
+            await http.get(
               Uri.parse(SERVER_API+"email/verify/resend"),
               headers: {
                 'Authorization':'Bearer ${jwt}'
@@ -89,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
           sharedPreferences.remove('jwt');
           userLoginData = null;
         });
-        context.go("/login");
       }
     });
   }

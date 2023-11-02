@@ -1,37 +1,32 @@
-import 'package:becademy/main.dart';
 import 'package:becademy/pages/auth/login.dart';
 import 'package:becademy/pages/course/course.dart';
 import 'package:becademy/pages/course/courseDetail.dart';
-import 'package:becademy/pages/exception/emailNotVerified.dart';
 import 'package:becademy/pages/exception/emailVerificationSent.dart';
 import 'package:becademy/pages/mainPage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class AppNavigation {
+  
   AppNavigation._();
 
   static String initR = '/';
 
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
-  static final _rootNavigatorHome = GlobalKey<NavigatorState>(debugLabel: 'shell');
-  static final _rootNavigatorCourse = GlobalKey<NavigatorState>(debugLabel: 'shellCourse');
-  static final _rootNavigatorNotification = GlobalKey<NavigatorState>(debugLabel: 'shellNotification');
-  static final _rootNavigatorProfile = GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
 
 
   static final GoRouter goRouterProvider = GoRouter(
-    redirect: (context, state) {
-      var currentPage = state.uri.toString();
+    // redirect: (context, state) {
+    //   var currentPage = state.uri.toString();
 
-      if (userLoginData != null && currentPage == '/login') {
-        return '/';
-      }
-      if (userLoginData == null && currentPage != '/login') {
-        return '/login';
-      }
-      return null;
-    },
+    //   if (userLoginData != null && currentPage == '/login') {
+    //     return '/';
+    //   }
+    //   if (userLoginData == null && currentPage != '/login') {
+    //     return '/login';
+    //   }
+    //   return null;
+    // },
     navigatorKey: _rootNavigatorKey,
     initialLocation: initR,
     routes: <RouteBase>[
