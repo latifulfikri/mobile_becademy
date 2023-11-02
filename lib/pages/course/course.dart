@@ -50,7 +50,7 @@ class _CoursePageState extends State<CoursePage> {
       result = allCourses;
     } else {
       result.clear();
-      result = result = allCourses.where((element) =>
+      result = allCourses.where((element) =>
           element.name.toLowerCase().contains(keyword.toLowerCase())
       ).toList();
     }
@@ -237,7 +237,12 @@ class _CoursePageState extends State<CoursePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(course.name),
+                              Text(
+                                course.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
                               Padding(padding: EdgeInsets.only(bottom: 8)),
                               Row(
                                 children: [
@@ -255,14 +260,6 @@ class _CoursePageState extends State<CoursePage> {
                                       ),
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text("${(0.67*100).toInt()}%")
-                                    ],
-                                  ),
-                                )
                                 ],
                               ),
                               Padding(padding: EdgeInsets.only(bottom: 8)),

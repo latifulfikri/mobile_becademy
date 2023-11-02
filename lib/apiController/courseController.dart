@@ -3,13 +3,15 @@ import 'dart:convert';
 import 'package:becademy/main.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseController {
+  
   Future get() async {
     try {
       final response = await http.get(Uri.parse(SERVER_API+"course"));
+      Map<String,dynamic> course = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        Map<String,dynamic> course = jsonDecode(response.body);
         // Iterable courseData = jsonDecode(course['data']);
         // final courseData = course['data'];
         // List<CourseModel> courses = courseData.map((data) => CourseModel.fromJson(data)).toList();
@@ -21,6 +23,7 @@ class CourseController {
       }
     } catch (e) {
       print(e.toString());
+      return [];
     }
   }
 
@@ -31,6 +34,30 @@ class CourseController {
       return res;
     } catch (e) {
       print(e.toString());
+      return null;
+    }
+  }
+
+  Future getMyCourse() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+
+    try {
+      final response = await http.get(
+        Uri.parse(SERVER_API+"my/course"),
+        headers: {
+          'Authorization':'Bearer ${jwt}'
+        }
+      );
+      Map<String,dynamic> res = jsonDecode(response.body);
+      List<CourseModel> courses = [];
+      res['data'].forEach((data) {
+        courses.add(CourseModel.fromJsonMyCourse(data['course']));
+      });
+      return courses;
+    } catch (e) {
+      print(e.toString());
+      return [];
     }
   }
 

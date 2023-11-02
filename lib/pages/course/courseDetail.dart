@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:becademy/apiController/courseController.dart';
+import 'package:becademy/apiController/moduleController.dart';
 import 'package:becademy/model/categoryModel.dart';
 import 'package:becademy/model/courseModel.dart';
+import 'package:becademy/model/moduleModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -25,11 +27,13 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   
   var course = CourseModel(id: "loading", name: "loading", slug: "loading", desc: "loading", price: 0, min_processor: "loading", min_storage: 0, min_ram: 0, is_active: 0, created_at: "loading", updated_at: "loading", category: CategoryModel(id: "loading", name: "loading", slug: "loading", icon: "loading", color: "loading", created_at: "loading", updated_at: "loading"));
 
-  List<CourseModel> courses = [];
+
+  List<ModuleModel> modules = [];
 
   var price = "loading";
 
   CourseController courseApi = CourseController();
+  ModuleController moduleApi = ModuleController();
   
   Future<void> getCourse() async {
     Map<String,dynamic> res = await courseApi.getCourse(widget.courseSlug);
@@ -50,12 +54,23 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         
       });
     } else {
+      getModules(res['data']['slug']);
       setState(() {
         course = CourseModel.fromJson(res['data']);
         price = NumberFormat.currency(locale: "id", symbol: "Rp ", decimalDigits: 0).format(course.price);
       });
     }
   }
+
+  Future<void> getModules(String slug) async {
+    List<ModuleModel>? result = await moduleApi.get(slug);
+    modules.clear();
+    if (result != null) {
+      setState(() {
+        modules = result;
+      });
+    }
+  } 
 
   void displayDialog(BuildContext context, QuickAlertType type, String text) {
     QuickAlert.show(
@@ -396,52 +411,129 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
   Widget moduleWidget()
   {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 24
-                ),
-                child: Text(
-                  "Module",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold
+    if (modules.length > 0) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24
+                  ),
+                  child: Text(
+                    "Module",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold
+                    ),
                   ),
                 ),
-              ),
-              Padding(padding: EdgeInsets.only(bottom: 16)),
-              materialWidget(
-                "Pengenalan & Persiapan",
-                [
-                  materialItemWidget(2, "Apa itu algoritma"),
-                  materialItemWidget(2, "Instalasi visual studio code"),
-                ]
-              ),
-              Padding(padding: EdgeInsets.only(bottom: 16)),
-              materialWidget(
-                "Pemrograman",
-                [
-                  materialItemWidget(2, "Variabel, Array, Input & Output"),
-                  materialItemWidget(1, "Operator dan operand"),
-                  materialItemWidget(0, "Selection"),
-                  materialItemWidget(0, "Repetition"),
-                ]
-              )
-            ],
-          ),
-        )
-      ],
-    );
+                Padding(padding: EdgeInsets.only(bottom: 16)),
+                ...List.generate(modules.length, (index) {
+                  if (modules[index].materials!.length > 0) {
+                    return materialWidget(
+                      modules[index].name,
+                      [
+                        ...List.generate(modules[index].materials!.length, (index2) {
+                          return materialItemWidget(0, modules[index].materials![index2].name);
+                        }),
+                      ]
+                    );
+                  } else {
+                    return materialWidget(
+                      modules[index].name,
+                      [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text("No material yet",
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.tertiary
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      ]
+                    );
+                  }
+                }),
+              ],
+            ),
+          )
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24
+                  ),
+                  child: Text(
+                    "Module",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Padding(padding: EdgeInsets.only(bottom: 16)),
+                materialWidget(
+                  "No module yet",[]
+                )
+              ],
+            ),
+          )
+        ],
+      );
+    }
   }
 
   Widget materialWidget(String title, List<Widget> materialItems)
   {
+    if (materialItems.length < 0) {
+      return Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(24)
+              ),
+              padding: EdgeInsets.all(24),
+              margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.only(bottom: 6)),
+                  Text("No material yet")
+                ],
+              ),
+            ),
+          )
+        ],
+      );
+    }
     return Row(
       children: [
         Expanded(
@@ -451,9 +543,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               borderRadius: BorderRadius.circular(24)
             ),
             padding: EdgeInsets.all(24),
-            margin: EdgeInsets.symmetric(
-              horizontal: 24
-            ),
+            margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
             child: Column(
               children: [
                 Row(
@@ -489,13 +579,13 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     Color statusColor = Theme.of(context).primaryColor;
     IconData statusIcon = FontAwesomeIcons.book;
 
-    // if (status == 2) {
-    //   statusColor = Colors.green;
-    //   statusIcon = FontAwesomeIcons.check;
-    // } else if (status == 1) {
-    //   statusColor = Colors.blue;
-    //   statusIcon = FontAwesomeIcons.play;
-    // }
+    if (status == 2) {
+      statusColor = Colors.green;
+      statusIcon = FontAwesomeIcons.check;
+    } else if (status == 1) {
+      statusColor = Colors.blue;
+      statusIcon = FontAwesomeIcons.play;
+    }
 
     return Row(
       children: [

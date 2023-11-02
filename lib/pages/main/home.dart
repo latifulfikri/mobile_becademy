@@ -1,8 +1,10 @@
 import 'dart:ui';
 
 import 'package:becademy/apiController/categoryController.dart';
+import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
 import 'package:becademy/model/categoryModel.dart';
+import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,6 +22,9 @@ class _MainHomePageState extends State<MainHomePage> {
 
   List<CategoryModel> categories = [];
   CategoryController categoryApi = CategoryController();
+  List<CourseModel> allMyCourse = [];
+  List<CourseModel> myCourse = [];
+  CourseController courseApi = CourseController();
 
   Future<void> getCategories() async {
     categories.clear();
@@ -29,9 +34,32 @@ class _MainHomePageState extends State<MainHomePage> {
     });
   }
 
+  Future<void> getMyCourse() async {
+    allMyCourse.clear();
+    allMyCourse = await courseApi.getMyCourse();
+    setState(() {
+      myCourse = allMyCourse;
+    });
+  }
+
+  void filterMyCourseByCategory(String keyword) {
+    List<CourseModel> result = [];
+    if (keyword == "all") {
+      result.clear();
+      result = allMyCourse;
+    } else {
+      result.clear();
+      result = allMyCourse.where((element) => element.category_id!.contains(keyword)).toList();
+    }
+    setState(() {
+      myCourse = result;
+    });
+  }
+
   @override
   void initState() {
     getCategories();
+    getMyCourse();
     // TODO: implement initState
     super.initState();
   }
@@ -50,6 +78,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 mainWidget(),
                 categoryWidget(),
                 searchWidget(),
+                SizedBox(height: 24,),
                 recomendationWidget(),
                 SizedBox(
                   height: 160,
@@ -142,24 +171,46 @@ class _MainHomePageState extends State<MainHomePage> {
               padding: EdgeInsets.fromLTRB(24, 24, 0, 24),
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: List.generate(categories.length, (index){
-                  return Container(
+                children: [
+                  Container(
                     padding: EdgeInsets.only(right: 24),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        filterMyCourseByCategory("all");
+                      },
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Icon(FontAwesomeIcons.mobile),
                           Text(
-                            categories[index].name,
+                            "All",
                             style: TextStyle(color: Colors.white),
                           )
                         ],
                       )
                     ),
-                  );
-                }),
+                  ),
+                  ...List.generate(categories.length, (index){
+                    return Container(
+                      padding: EdgeInsets.only(right: 24),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          filterMyCourseByCategory(categories[index].id);
+                        },
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Icon(FontAwesomeIcons.mobile),
+                            Text(
+                              categories[index].name,
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        )
+                      ),
+                    );
+                  })
+                ],
               ),
             ),
           ),
@@ -209,19 +260,8 @@ class _MainHomePageState extends State<MainHomePage> {
       children: [
         Expanded(
           child: Column(
-            children: [
-              SizedBox(
-                height: 24,
-              ),
-              courseItem("Dasar Pemrograman Menggunakan C", "CLI", 0.67),
-              SizedBox(
-                height: 16,
-              ),
-              courseItem("Dasar Database Menggunakan MySQL", "Database", 0.37),
-              SizedBox(
-                height: 16,
-              ),
-              courseItem("Membuat Landing Page", "Website", 0.13),
+            children: <Widget>[
+              ...List.generate(myCourse.length, (index) => courseItem(myCourse[index]))
             ],
           ),
         )
@@ -229,100 +269,90 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  Widget courseItem(String title, String category, double progress) {
+  Widget courseItem(CourseModel course) {
     return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: 24
-      ),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(24)
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.tertiary,
-              borderRadius: BorderRadius.circular(16)
-            ),
+      margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
+      child: Ink(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.tertiaryContainer,
+          borderRadius: BorderRadius.circular(24)
+        ),
+        child: InkWell(
+          customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24)
           ),
-          SizedBox(
-            width: 16,
-          ),
-          Expanded(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
-                    ),
-                  ),
-                  Padding(padding: EdgeInsets.only(bottom: 8)),
-                  Row(
+          onTap: () {
+            context.push("/course/${course.slug}");
+          },
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(6),
+                        width: 100,
+                        height: 100,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(8)
+                          color: Theme.of(context).colorScheme.tertiary,
+                          borderRadius: BorderRadius.circular(16)
                         ),
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
-                        ),
+                      ),
+                      SizedBox(
+                        width: 16,
                       ),
                       Expanded(
-                        child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("${(progress*100).toInt()}%")
-                        ],
-                      ),
-                    )
-                    ],
-                  ),
-                  Padding(padding: EdgeInsets.only(bottom: 8)),
-                  Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              borderRadius: BorderRadius.circular(16)
-                            ),
-                            child: new FractionallySizedBox(
-                              widthFactor: progress,
-                              heightFactor: 1.0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: BorderRadius.circular(16)
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                course.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold
+                                ),
                               ),
-                              child: Text(""),
-                            ),
+                              Padding(padding: EdgeInsets.only(bottom: 8)),
+                              Text(
+                                course.desc.length > 20 ? course.desc.substring(0,40)+"..." : course.desc,
+                              ),
+                              Padding(padding: EdgeInsets.only(bottom: 8)),
+                              courseDetail(16, 3)
+                            ],
                           ),
                         ),
                       )
                     ],
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget courseDetail(int module, int time)
+  {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Icon(FontAwesomeIcons.solidBookmark,color: Theme.of(context).primaryColor),
+              Padding(padding: EdgeInsets.only(right: 4)),
+              Text("${module.toString()}"),
+              Padding(padding: EdgeInsets.only(right: 16)),
+              Icon(FontAwesomeIcons.solidClock,color: Theme.of(context).primaryColor,),
+              Padding(padding: EdgeInsets.only(right: 4)),
+              Text("${time.toString()}h"),
+            ],
+          ),
+        )
+      ],
     );
   }
 }
