@@ -11,6 +11,8 @@ import 'package:becademy/pages/main/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainPage extends StatefulWidget {
@@ -33,7 +35,7 @@ class _MainPageState extends State<MainPage> {
   ];
 
   List<String> _title = [
-    "Hi, Nick!",
+    "Beranda",
     "Kelasku",
     "Notifikasi",
     "Profil"
@@ -47,45 +49,79 @@ class _MainPageState extends State<MainPage> {
   //   );
   // }
 
-  Future<void> setUserLoginData() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  Future<void> setUserLoginData(SharedPreferences sharedPreferences) async {
     var jwt = sharedPreferences.getString('jwt');
 
-    var response = await http.get(
+    await http.get(
       Uri.parse(SERVER_API+"my/data"),
       headers: {
         'Authorization':'Bearer ${jwt}'
       }
-    );
+    ).then((value) {
 
-    Map<String,dynamic> responseBody = jsonDecode(response.body);
+      Map<String,dynamic> responseBody = jsonDecode(value.body);
 
-    if (response.statusCode == 200) {
-      setState(() {
-        userLoginData = AccountModel.fromJson(responseBody['data']);
-      });
-      context.go("/");
-    } else {
-      setState(() {
-        sharedPreferences.remove('jwt');
-        userLoginData = null;
-      });
-      context.go("/login");
-    }
-
+      if(value.statusCode == 403) {
+        print("not verified");
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.warning,
+          text: "Your email is not verified. Click the button bellow to send email verification",
+          confirmBtnColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+          titleColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          onConfirmBtnTap: () async {
+            final response = await http.get(
+              Uri.parse(SERVER_API+"email/verify/resend"),
+              headers: {
+                'Authorization':'Bearer ${jwt}'
+              }
+            ).then((value){
+              print("send");
+              Navigator.pop(context);
+              displayDialog(context, QuickAlertType.success, "Verification link has been sent to your email");
+            });
+          },
+          confirmBtnText: "Send email verification"
+        );
+      } else if (value.statusCode == 200) {
+        setState(() {
+          userLoginData = AccountModel.fromJson(responseBody['data']);
+        });
+      } else {
+        setState(() {
+          sharedPreferences.remove('jwt');
+          userLoginData = null;
+        });
+        context.go("/login");
+      }
+    });
   }
 
   Future getJwt() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var jwt = sharedPreferences.getString('jwt');
-    if (await jwt == null) {
+    if (await jwt != null) {
+      setUserLoginData(sharedPreferences);
+    } else {
       setState(() {
         userLoginData = null;
         context.go("/login");
       });
-    } else {
-      setUserLoginData();
     }
+  }
+
+  void displayDialog(BuildContext context, QuickAlertType type, String text) {
+    QuickAlert.show(
+      context: context,
+      type: type,
+      text: text,
+      confirmBtnColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+      titleColor: Theme.of(context).colorScheme.secondary,
+      textColor: Theme.of(context).colorScheme.secondary,
+    );
   }
 
   @override

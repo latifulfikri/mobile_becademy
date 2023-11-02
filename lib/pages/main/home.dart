@@ -56,6 +56,22 @@ class _MainHomePageState extends State<MainHomePage> {
     });
   }
 
+  void findCourses(String keyword) {
+    List<CourseModel> result = [];
+    if (keyword.isEmpty) {
+      result.clear();
+      result = allMyCourse;
+    } else {
+      result.clear();
+      result = allMyCourse.where((element) =>
+          element.name.toLowerCase().contains(keyword.toLowerCase())
+      ).toList();
+    }
+    setState(() {
+      myCourse = result;
+    });
+  }
+
   @override
   void initState() {
     getCategories();
@@ -70,7 +86,10 @@ class _MainHomePageState extends State<MainHomePage> {
       child: CustomScrollView(
         slivers: [
           CupertinoSliverRefreshControl(
-            onRefresh: getCategories,
+            onRefresh: () async {
+              getCategories();
+              getMyCourse();
+            },
           ),
           SliverList(
             delegate: SliverChildListDelegate(
@@ -232,9 +251,7 @@ class _MainHomePageState extends State<MainHomePage> {
               borderRadius: BorderRadius.circular(16)
             ),
             child: TextField(
-              onTap: () {
-                context.push('/course');
-              },
+              onChanged: (value) => findCourses(value),
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                 prefixIcon: Padding(
@@ -256,17 +273,48 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget recomendationWidget() {
-    return new Row(
-      children: [
-        Expanded(
-          child: Column(
-            children: <Widget>[
-              ...List.generate(myCourse.length, (index) => courseItem(myCourse[index]))
-            ],
-          ),
-        )
-      ],
-    );
+    if (myCourse.length > 0) {
+      return new Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                ...List.generate(myCourse.length, (index) => courseItem(myCourse[index]))
+              ],
+            ),
+          )
+        ],
+      );
+    } else {
+      return Container(
+        margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text("Kamu belum terdaftar\nke kelas manapun",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16,),
+                  ElevatedButton(
+                    onPressed: () => context.push("/course"),
+                    child: Text("Lihat semua kelas"),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+    }
   }
 
   Widget courseItem(CourseModel course) {

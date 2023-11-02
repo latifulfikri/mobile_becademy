@@ -114,7 +114,17 @@ class _MainCoursePageState extends State<MainCoursePage> {
     //     )
     //   ]
     // );
-    return iosWidget();
+    return Container(
+      child: Column(
+        children: [
+          searchWidget(),
+          categoryWidget(),
+          Expanded(
+            child: iosWidget(),
+          )
+        ],
+      ),
+    );
   }
 
   Widget liquidWidget()
@@ -145,16 +155,12 @@ class _MainCoursePageState extends State<MainCoursePage> {
       child: CustomScrollView(
         slivers: [
           CupertinoSliverRefreshControl(
-            onRefresh: getCourses,
+            onRefresh: () async {
+              getCategories();
+              getCourses();
+            }
           ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context,index) {
-                return courseItem(courses[index]);
-              },
-              childCount: courses.length > 3 ? 3 : courses.length
-            ),
-          ),
+          myCourseWidget(),
           SliverList(
             delegate: SliverChildListDelegate(
               [
@@ -171,7 +177,7 @@ class _MainCoursePageState extends State<MainCoursePage> {
                           child: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              Text("Lihat semua course")
+                              Text("Daftar course baru")
                             ],
                           )
                         ),
@@ -188,6 +194,49 @@ class _MainCoursePageState extends State<MainCoursePage> {
         ],
       ),
     );
+  }
+
+  Widget myCourseWidget() {
+    if (courses.length > 0) {
+      return SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context,index) {
+            return courseItem(courses[index]);
+          },
+          childCount: courses.length
+        ),
+      );
+    } else {
+      return SliverList(
+        delegate: SliverChildListDelegate(
+          [
+            Container(
+              margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text("Kamu belum terdaftar\nke kelas manapun",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
+          ]
+        ),
+      );
+    }
   }
 
   Widget categoryWidget() {
@@ -260,9 +309,7 @@ class _MainCoursePageState extends State<MainCoursePage> {
               borderRadius: BorderRadius.circular(16)
             ),
             child: TextField(
-              onTap: () {
-                context.push('/course');
-              },
+              onChanged: (value) => findCourses(value),
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
                 prefixIcon: Padding(

@@ -102,15 +102,6 @@ class _CoursePageState extends State<CoursePage> {
           CupertinoSliverRefreshControl(
             onRefresh: getCourses,
           ),
-          // SliverList(
-          //   delegate: SliverChildListDelegate(
-          //     [
-          //       searchWidget(),
-          //       categoryWidget(),
-          //       Padding(padding: EdgeInsets.only(bottom: 24))
-          //     ]
-          //   ),
-          // ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context,index) {
