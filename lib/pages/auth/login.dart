@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:becademy/apiController/categoryController.dart';
+import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
 import 'package:becademy/model/accountModel.dart';
+import 'package:becademy/model/categoryModel.dart';
+import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +23,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool passwordVisible=false;
+  CourseController courseApi = CourseController();
+  CategoryController categoryApi = CategoryController();
 
   Future getJwt() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -31,6 +37,25 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
+
+  // Future<void> getCategories() async {
+  //   categoriesData.clear();
+  //   await categoryApi.get().then((value) {
+  //     setState(() {
+  //       categoriesData = value;
+  //     });
+  //   });
+    
+  // }
+
+  // Future<void> getCourses() async {
+  //   coursesData.clear();
+  //   await courseApi.getMyCourse().then((value) {
+  //     setState(() {
+  //       coursesData = value;
+  //     });
+  //   });
+  // }
 
   @override
   void initState() {
@@ -282,6 +307,7 @@ class _LoginPageState extends State<LoginPage> {
               minimumSize: Size.fromHeight(50)
             ),
             onPressed: () async {
+              openApp = 0;
               await loginAuth(_emailController.text, _passwordController.text);
             },
             child: Wrap(

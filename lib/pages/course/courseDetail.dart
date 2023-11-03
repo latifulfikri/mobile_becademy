@@ -5,6 +5,7 @@ import 'package:becademy/apiController/moduleController.dart';
 import 'package:becademy/model/categoryModel.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:becademy/model/moduleModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -125,8 +126,35 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           ),
         ),
       ),
-      body: course != null ? courseFound() : courseNotFound()
+      body: Container(
+        child: Column(
+          children: [
+            Expanded(
+              child: iosWidget(),
+            )
+          ],
+        ),
+      )
     );
+  }
+
+  Widget iosWidget()
+  {
+    return CustomScrollView(
+        slivers: [
+          CupertinoSliverRefreshControl(
+            onRefresh: getCourse,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                course.name == "loading" ? courseFound() : courseNotFound(),
+                SizedBox(height: 50)
+              ]
+            )
+          )
+        ],
+      );
   }
 
   Widget courseFound() {

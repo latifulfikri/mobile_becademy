@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
+import 'package:becademy/main.dart';
 import 'package:becademy/model/categoryModel.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,25 +19,27 @@ class MainHomePage extends StatefulWidget {
 
 class _MainHomePageState extends State<MainHomePage> {
 
-  List<CategoryModel> categories = [];
-  CategoryController categoryApi = CategoryController();
-  List<CourseModel> allMyCourse = [];
-  List<CourseModel> myCourse = [];
+  List<CourseModel> courses = [];
   CourseController courseApi = CourseController();
+  CategoryController categoryApi = CategoryController();
 
   Future<void> getCategories() async {
-    categories.clear();
-    categories = await categoryApi.get();
-    setState(() {
-      
+    categoriesData.clear();
+    await categoryApi.get().then((value) {
+      setState(() {
+        categoriesData = value;
+      });
     });
+    
   }
 
-  Future<void> getMyCourse() async {
-    allMyCourse.clear();
-    allMyCourse = await courseApi.getMyCourse();
-    setState(() {
-      myCourse = allMyCourse;
+  Future<void> getCourses() async {
+    coursesData.clear();
+    await courseApi.getMyCourse().then((value) {
+      setState(() {
+        myCoursesData = value;
+        courses = value;
+      });
     });
   }
 
@@ -44,13 +47,13 @@ class _MainHomePageState extends State<MainHomePage> {
     List<CourseModel> result = [];
     if (keyword == "all") {
       result.clear();
-      result = allMyCourse;
+      result = myCoursesData;
     } else {
       result.clear();
-      result = allMyCourse.where((element) => element.category_id!.contains(keyword)).toList();
+      result = myCoursesData.where((element) => element.category_id!.contains(keyword)).toList();
     }
     setState(() {
-      myCourse = result;
+      courses = result;
     });
   }
 
@@ -58,22 +61,30 @@ class _MainHomePageState extends State<MainHomePage> {
     List<CourseModel> result = [];
     if (keyword.isEmpty) {
       result.clear();
-      result = allMyCourse;
+      result = myCoursesData;
     } else {
       result.clear();
-      result = allMyCourse.where((element) =>
-          element.name.toLowerCase().contains(keyword.toLowerCase())
+      result = myCoursesData.where((element) =>
+        element.name.toLowerCase().contains(keyword.toLowerCase())
       ).toList();
     }
+    print("listening");
     setState(() {
-      myCourse = result;
+      courses = result;
     });
   }
 
   @override
   void initState() {
-    getCategories();
-    getMyCourse();
+    if (openApp == 0) {
+      getCategories();
+      getCourses();
+      openApp = 1;
+    } else {
+      setState(() {
+        courses = myCoursesData;
+      });
+    }
     // TODO: implement initState
     super.initState();
   }
@@ -86,7 +97,7 @@ class _MainHomePageState extends State<MainHomePage> {
           CupertinoSliverRefreshControl(
             onRefresh: () async {
               getCategories();
-              getMyCourse();
+              getCourses();
             },
           ),
           SliverList(
@@ -207,19 +218,19 @@ class _MainHomePageState extends State<MainHomePage> {
                       )
                     ),
                   ),
-                  ...List.generate(categories.length, (index){
+                  ...List.generate(categoriesData.length, (index){
                     return Container(
                       padding: EdgeInsets.only(right: 24),
                       child: ElevatedButton(
                         onPressed: () {
-                          filterMyCourseByCategory(categories[index].id);
+                          filterMyCourseByCategory(categoriesData[index].id);
                         },
                         child: Wrap(
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Icon(FontAwesomeIcons.mobile),
                             Text(
-                              categories[index].name,
+                              categoriesData[index].name,
                               style: TextStyle(color: Colors.white),
                             )
                           ],
@@ -271,13 +282,13 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget recomendationWidget() {
-    if (myCourse.length > 0) {
+    if (courses.length > 0) {
       return new Row(
         children: [
           Expanded(
             child: Column(
               children: <Widget>[
-                ...List.generate(myCourse.length, (index) => courseItem(myCourse[index]))
+                ...List.generate(courses.length, (index) => courseItem(courses[index]))
               ],
             ),
           )

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quickalert/quickalert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainProfilePage extends StatefulWidget {
@@ -34,19 +35,6 @@ class _MainProfilePageState extends State<MainProfilePage> {
     return new Container(
       child: CustomScrollView(
         slivers: [
-          // const SliverAppBar(
-          //   pinned: false,
-          //   floating: true,
-          //   title: Padding(padding: EdgeInsets.all(16), child: Text("Kelasku", style: TextStyle(
-          //     fontWeight: FontWeight.bold,
-          //     fontSize: 24
-          //   ),),),
-          //   centerTitle: false,
-          //   elevation: 0,
-          // ),
-          // CupertinoSliverRefreshControl(
-          //   onRefresh: get,
-          // ),
           SliverList(
             delegate: SliverChildListDelegate(
               [
@@ -270,12 +258,33 @@ class _MainProfilePageState extends State<MainProfilePage> {
               foregroundColor: Theme.of(context).colorScheme.secondary,
             ),
             onPressed: () async {
-              SharedPreferences preferences = await SharedPreferences.getInstance();
-              preferences.remove('jwt');
-              setState(() {
-                userLoginData = null;
-              });
-              context.go('/login');
+              QuickAlert.show(
+                context: context,
+                type: QuickAlertType.confirm,
+                text: "Are you sure want to logout?",
+                confirmBtnColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+                titleColor: Theme.of(context).colorScheme.secondary,
+                textColor: Theme.of(context).colorScheme.secondary,
+                onConfirmBtnTap: () async {
+                  openApp = 0;
+                  categoriesData = [];
+                  coursesData = [];
+                  myCoursesData = [];
+
+                  SharedPreferences preferences = await SharedPreferences.getInstance();
+                  preferences.remove('jwt');
+                  setState(() {
+                    userLoginData = null;
+                  });
+                  context.go('/login');
+                },
+                confirmBtnText: "Logout",
+                onCancelBtnTap: () {
+                  Navigator.pop(context);
+                },
+                cancelBtnText: "cancel",
+              );
             },
             child: Row(
               children: [

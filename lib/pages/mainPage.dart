@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:ui';
 
+import 'package:becademy/apiController/categoryController.dart';
+import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
+import 'package:becademy/model/categoryModel.dart';
+import 'package:becademy/model/courseModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:becademy/model/accountModel.dart';
 import 'package:becademy/pages/main/course.dart';
@@ -25,6 +29,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> { 
+  CourseController courseApi = CourseController();
+  CategoryController categoryApi = CategoryController();
+
   int _bottomNavigationCurrentIndex = 0;
 
   final List<IconData> _bottomNavItem = [
@@ -34,20 +41,31 @@ class _MainPageState extends State<MainPage> {
     FontAwesomeIcons.solidUser,
   ];
 
-  List<String> _title = [
+  final List<String> _title = [
     "Beranda",
     "Kelasku",
     "Notifikasi",
     "Profil"
   ];
 
-  // void _goToBranch(int index)
-  // {
-  //   widget.body.goBranch(
-  //     index,
-  //     initialLocation: index == widget.body.currentIndex
-  //   );
-  // }
+  void getCategories() async {
+    categoriesData.clear();
+    await categoryApi.get().then((value) {
+      categoriesData = value;
+      setState(() {
+        
+      });
+    });
+  }
+
+  void getCourses() async {
+    coursesData.clear();
+    await courseApi.getMyCourse().then((value) {
+      setState(() {
+        myCoursesData = value;
+      });
+    });
+  }
 
   Future<void> setUserLoginData(SharedPreferences sharedPreferences) async {
     var jwt = sharedPreferences.getString('jwt');
@@ -64,6 +82,7 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           userLoginData = AccountModel.fromJson(responseBody['data']);
         });
+        
       } else {
         setState(() {
           sharedPreferences.remove('jwt');
@@ -74,11 +93,14 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  Future getJwt() async {
+  void getJwt() async {
     await SharedPreferences.getInstance().then((value) {
       var jwt = value.getString('jwt');
       if (jwt != null) {
         setUserLoginData(value);
+        setState(() {
+          
+        });
       } else {
         setState(() {
           userLoginData = null;
@@ -152,10 +174,9 @@ class _MainPageState extends State<MainPage> {
           )
         ],
       ),
-      body:Stack(
+      body: Stack(
         children: [
           _container[_bottomNavigationCurrentIndex],
-          // bottom nav bar
           Column(
             children: [
               const Spacer(),

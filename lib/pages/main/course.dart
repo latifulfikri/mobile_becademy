@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
+import 'package:becademy/main.dart';
 import 'package:becademy/model/categoryModel.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,26 +19,28 @@ class MainCoursePage extends StatefulWidget {
 }
 
 class _MainCoursePageState extends State<MainCoursePage> {
-  List<CategoryModel> categories = [];
-  CategoryController categoryApi = CategoryController();
-  
-  List<CourseModel> allCourses = [];
   List<CourseModel> courses = [];
+
   CourseController courseApi = CourseController();
+  CategoryController categoryApi = CategoryController();
 
   Future<void> getCategories() async {
-    categories.clear();
-    categories = await categoryApi.get();
-    setState(() {
-      
+    categoriesData.clear();
+    await categoryApi.get().then((value) {
+      setState(() {
+        categoriesData = value;
+      });
     });
+    
   }
 
   Future<void> getCourses() async {
-    allCourses.clear();
-    allCourses = await courseApi.getMyCourse();
-    setState(() {
-      courses = allCourses;
+    coursesData.clear();
+    await courseApi.getMyCourse().then((value) {
+      setState(() {
+        myCoursesData = value;
+        courses = value;
+      });
     });
   }
 
@@ -45,10 +48,10 @@ class _MainCoursePageState extends State<MainCoursePage> {
     List<CourseModel> result = [];
     if (keyword == "all") {
       result.clear();
-      result = allCourses;
+      result = myCoursesData;
     } else {
       result.clear();
-      result = allCourses.where((element) => element.category_id!.contains(keyword)).toList();
+      result = myCoursesData.where((element) => element.category_id!.contains(keyword)).toList();
     }
     setState(() {
       courses = result;
@@ -59,13 +62,14 @@ class _MainCoursePageState extends State<MainCoursePage> {
     List<CourseModel> result = [];
     if (keyword.isEmpty) {
       result.clear();
-      result = allCourses;
+      result = myCoursesData;
     } else {
       result.clear();
-      result = allCourses.where((element) =>
-          element.name.toLowerCase().contains(keyword.toLowerCase())
+      result = myCoursesData.where((element) =>
+        element.name.toLowerCase().contains(keyword.toLowerCase())
       ).toList();
     }
+    print("listening");
     setState(() {
       courses = result;
     });
@@ -73,47 +77,20 @@ class _MainCoursePageState extends State<MainCoursePage> {
 
   @override
   void initState() {
-    getCategories();
-    getCourses();
+    if (openApp == 0) {
+      getCategories();
+      getCourses();
+      openApp = 1;
+    } else {
+      setState(() {
+        courses = myCoursesData;
+      });
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // return new ListView(
-    //   children: [
-    //     Column(
-    //       children: [
-    //         courseItem("Dasar Pemrograman Menggunakan C", "CLI", 0.67),
-    //         SizedBox(
-    //           height: 16,
-    //         ),
-    //         courseItem("Dasar Database Menggunakan MySQL", "Database", 0.37),
-    //         SizedBox(
-    //           height: 16,
-    //         ),
-    //         courseItem("Membuat Landing Page", "Website", 0.13),
-    //         SizedBox(
-    //           height: 24,
-    //         ),
-    //         ElevatedButton(
-    //           onPressed: (){},
-    //           child: Wrap(
-    //             crossAxisAlignment: WrapCrossAlignment.center,
-    //             children: [
-    //               Icon(FontAwesomeIcons.plus),
-    //               SizedBox(width: 16,),
-    //               Text("Daftar kelas baru")
-    //             ],
-    //           )
-    //         )
-    //       ],
-    //     ),
-    //     SizedBox(
-    //       height: 120,
-    //     )
-    //   ]
-    // );
     return Container(
       child: Column(
         children: [
@@ -139,12 +116,12 @@ class _MainCoursePageState extends State<MainCoursePage> {
       showChildOpacityTransition: true,
       child: ListView.separated(
         itemBuilder: (context,index) {
-          return courseItem(courses[index]);
+          return courseItem(courses![index]);
         },
         separatorBuilder: (context,index) {
           return const SizedBox(height: 0,);
         },
-        itemCount: courses.length
+        itemCount: courses != null ? courses!.length : 0
       ),
     );
   }
@@ -267,19 +244,19 @@ class _MainCoursePageState extends State<MainCoursePage> {
                       )
                     ),
                   ),
-                  ...List.generate(categories.length, (index){
+                  ...List.generate(categoriesData.length, (index){
                     return Container(
                       padding: EdgeInsets.only(right: 24),
                       child: ElevatedButton(
                         onPressed: () {
-                          filterMyCourseByCategory(categories[index].id);
+                          filterMyCourseByCategory(categoriesData[index].id);
                         },
                         child: Wrap(
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Icon(FontAwesomeIcons.mobile),
                             Text(
-                              categories[index].name,
+                              categoriesData[index].name,
                               style: TextStyle(color: Colors.white),
                             )
                           ],
