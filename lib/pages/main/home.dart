@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
-import 'package:becademy/model/categoryModel.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

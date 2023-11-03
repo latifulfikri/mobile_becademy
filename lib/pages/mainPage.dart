@@ -4,8 +4,6 @@ import 'dart:ui';
 import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
-import 'package:becademy/model/categoryModel.dart';
-import 'package:becademy/model/courseModel.dart';
 import 'package:http/http.dart' as http;
 import 'package:becademy/model/accountModel.dart';
 import 'package:becademy/pages/main/course.dart';

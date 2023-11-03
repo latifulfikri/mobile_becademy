@@ -4,8 +4,6 @@ import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
 import 'package:becademy/model/accountModel.dart';
-import 'package:becademy/model/categoryModel.dart';
-import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';

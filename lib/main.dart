@@ -1,5 +1,3 @@
-import 'package:becademy/apiController/categoryController.dart';
-import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/model/accountModel.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:becademy/model/categoryModel.dart';
