@@ -61,4 +61,23 @@ class CourseController {
     }
   }
 
+  Future isMember(String slug) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+
+    try {
+      final response = await http.put(
+        Uri.parse(SERVER_API+"course/"+slug+"/is-member"),
+        headers: {
+          'Authorization':'Bearer ${jwt}'
+        }
+      );
+      Map<String,dynamic> res = jsonDecode(response.body);
+      return res['data']['result'];
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
 }

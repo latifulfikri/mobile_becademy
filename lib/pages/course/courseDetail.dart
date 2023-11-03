@@ -26,8 +26,20 @@ class CourseDetailPage extends StatefulWidget {
 
 class _CourseDetailPageState extends State<CourseDetailPage> {
   
-  var course = CourseModel(id: "loading", name: "loading", slug: "loading", desc: "loading", price: 0, min_processor: "loading", min_storage: 0, min_ram: 0, is_active: 0, created_at: "loading", updated_at: "loading", category: CategoryModel(id: "loading", name: "loading", slug: "loading", icon: "loading", color: "loading", created_at: "loading", updated_at: "loading"));
+  CourseModel? course = CourseModel(id: "loading", name: "loading", slug: "loading", desc: "loading", price: 0, min_processor: "loading", min_storage: 0, min_ram: 0, is_active: 0, created_at: "loading", updated_at: "loading", category: CategoryModel(id: "loading", name: "loading", slug: "loading", icon: "loading", color: "loading", created_at: "loading", updated_at: "loading"));
+  bool courseMember = false;
 
+  Widget courseView() {
+    if (course != null) {
+      if (course!.name != "loading") {
+        return courseFound();
+      } else {
+        return courseLoading();
+      }
+    } else {
+      return courseNotFound();
+    }
+  }
 
   List<ModuleModel> modules = [];
 
@@ -39,6 +51,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   Future<void> getCourse() async {
     Map<String,dynamic> res = await courseApi.getCourse(widget.courseSlug);
     if (res['status'] != 200) {
+      course = null;
       QuickAlert.show(
         context: context,
         type: QuickAlertType.error,
@@ -48,17 +61,21 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         titleColor: Theme.of(context).colorScheme.secondary,
         textColor: Theme.of(context).colorScheme.secondary,
         onConfirmBtnTap: () {
-          context.pop();
+          context.go("/");
         }
       );
       setState(() {
         
       });
     } else {
+      isMember(res['data']['slug']);
       getModules(res['data']['slug']);
+      course = CourseModel.fromJson(res['data']);
+      if (course != null) {
+        price = NumberFormat.currency(locale: "id", symbol: "Rp ", decimalDigits: 0).format(course!.price);
+      }
       setState(() {
-        course = CourseModel.fromJson(res['data']);
-        price = NumberFormat.currency(locale: "id", symbol: "Rp ", decimalDigits: 0).format(course.price);
+        
       });
     }
   }
@@ -71,7 +88,16 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         modules = result;
       });
     }
-  } 
+  }
+
+  Future<void> isMember(String slug) async {
+    await courseApi.isMember(slug).then((value) {
+      courseMember = value;
+      setState(() {
+        
+      });
+    });
+  }
 
   void displayDialog(BuildContext context, QuickAlertType type, String text) {
     QuickAlert.show(
@@ -98,168 +124,141 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 20,
-              sigmaY: 20,
-            ),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-        ),
-        // leading: IconButton(
-        //   onPressed: (){
-        //     Navigator.pop(context);
-        //   },
-        //   icon: Icon(FontAwesomeIcons.angleLeft)
-        // ),
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "Course",
+          "Kelas",
           style: TextStyle(
             fontWeight: FontWeight.bold
           ),
         ),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Expanded(
-              child: iosWidget(),
-            )
-          ],
-        ),
+      body: Stack(
+        children: [
+          courseView(),
+          Column(
+            children: [
+              const Spacer(),
+              Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor
+                ),
+              )
+            ],
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                Spacer(),
+                prizeBottomNavBar()
+              ],
+            ),
+          )
+        ],
       )
     );
   }
 
-  Widget iosWidget()
-  {
+  Widget courseFound() {
     return CustomScrollView(
-        slivers: [
-          CupertinoSliverRefreshControl(
-            onRefresh: getCourse,
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                course.name == "loading" ? courseFound() : courseNotFound(),
-                SizedBox(height: 50)
-              ]
-            )
+      slivers: [
+        CupertinoSliverRefreshControl(
+          onRefresh: getCourse,
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              thumbnailWidget(),
+              courseName(),
+              courseCategory(),
+              courseDetail(),
+              courseDetail2(72),
+              tutorWidget(),
+              moduleWidget(),
+              toolsWidget(),
+              SizedBox(
+                height: 160,
+              )
+            ]
           )
-        ],
-      );
+        )
+      ],
+    );
   }
 
-  Widget courseFound() {
-    return Stack(
-        children: [
-          ListView(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  thumbnailWidget(),
-                  courseName(),
-                  courseCategory(),
-                  courseDetail(),
-                  courseDetail2(16, 72),
-                  tutorWidget(),
-                  moduleWidget(),
-                  toolsWidget(),
-                  SizedBox(
-                    height: 120,
-                  )
-                ],
-              )
-            ],
-          ),
-          Column(
-            children: [
-              const Spacer(),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor
-                ),
-              )
-            ],
-          ),
-          SafeArea(
-            child: Column(
+  Widget courseLoading() {
+    return ListView(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            thumbnailWidget(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
-                prizeBottomNavBar()
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24
+                    ),
+                    child: Text(
+                      "Loading",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      );
+            SizedBox(
+              height: 120,
+            )
+          ],
+        )
+      ],
+    );
   }
 
   Widget courseNotFound() {
-    return Stack(
-        children: [
-          ListView(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  thumbnailWidget(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 24
-                          ),
-                          child: Text(
-                            "Course not found",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 120,
-                  )
-                ],
-              )
-            ],
-          ),
-          Column(
-            children: [
-              const Spacer(),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor
-                ),
-              )
-            ],
-          ),
-          SafeArea(
-            child: Column(
+    return ListView(
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            thumbnailWidget(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(),
-                prizeBottomNavBar()
+                Flexible(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24
+                    ),
+                    child: Text(
+                      "Kelas tidak ditemukan",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      );
+            SizedBox(
+              height: 120,
+            )
+          ],
+        )
+      ],
+    );
   }
 
   Widget thumbnailWidget()
@@ -293,7 +292,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               horizontal: 24
             ),
             child: Text(
-              course.name,
+              course!.name,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 24,
@@ -319,7 +318,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             borderRadius: BorderRadius.circular(8)
           ),
           child: Text(
-            course.category!.name,
+            course!.category!.name,
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w900
@@ -339,14 +338,14 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             padding: EdgeInsets.symmetric(
               horizontal: 24
             ),
-            child: Text(course.desc),
+            child: Text(course!.desc),
           ),
         )
       ],
     );
   }
 
-  Widget courseDetail2(int module, int time)
+  Widget courseDetail2(int time)
   {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -360,11 +359,11 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             children: [
               Icon(FontAwesomeIcons.solidBookmark,color: Theme.of(context).primaryColor),
               Padding(padding: EdgeInsets.only(right: 8)),
-              Text("${module.toString()} modules"),
+              Text("${modules.length} modul"),
               Padding(padding: EdgeInsets.only(right: 24)),
               Icon(FontAwesomeIcons.solidClock,color: Theme.of(context).primaryColor,),
               Padding(padding: EdgeInsets.only(right: 8)),
-              Text("${time.toString()} hours"),
+              Text("${time.toString()} jam"),
             ],
           ),
         )
@@ -452,7 +451,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     horizontal: 24
                   ),
                   child: Text(
-                    "Module",
+                    "Modul",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold
@@ -477,7 +476,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                         Row(
                           children: [
                             Expanded(
-                              child: Text("No material yet",
+                              child: Text("Belum ada materi",
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.tertiary
                                 ),
@@ -507,7 +506,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     horizontal: 24
                   ),
                   child: Text(
-                    "Module",
+                    "Modul",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold
@@ -516,7 +515,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 ),
                 Padding(padding: EdgeInsets.only(bottom: 16)),
                 materialWidget(
-                  "No module yet",[]
+                  "Belum ada modul",[]
                 )
               ],
             ),
@@ -561,42 +560,43 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           )
         ],
       );
-    }
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.tertiaryContainer,
-              borderRadius: BorderRadius.circular(24)
-            ),
-            padding: EdgeInsets.all(24),
-            margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold
+    } else {
+      return Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(24)
+              ),
+              padding: EdgeInsets.all(24),
+              margin: EdgeInsets.fromLTRB(24, 0, 24, 16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 6)),
-                ...List.generate(
-                  materialItems.length,
-                  (index) => materialItems[index]
-                )
-              ],
+                      )
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.only(bottom: 6)),
+                  ...List.generate(
+                    materialItems.length,
+                    (index) => materialItems[index]
+                  )
+                ],
+              ),
             ),
-          ),
-        )
-      ],
-    );
+          )
+        ],
+      );
+    }
   }
 
   Widget materialItemWidget(int status, String material)
@@ -666,12 +666,18 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Tools",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Spesifikasi minimum",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                    )
+                  ],
                 ),
                 Padding(padding: EdgeInsets.only(bottom: 16)),
                 // processor
@@ -699,7 +705,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  course.min_processor,
+                                  course!.min_processor,
                                 ),
                               )
                             ],
@@ -736,7 +742,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "${course.min_storage} GB",
+                                  "${course!.min_storage} GB",
                                 ),
                               )
                             ],
@@ -773,7 +779,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  "${course.min_ram} GB",
+                                  "${course!.min_ram} GB",
                                 ),
                               )
                             ],
@@ -794,45 +800,89 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
 
   Widget prizeBottomNavBar()
   {
-    return new Container(
-      padding: EdgeInsets.symmetric(
-        vertical: 24,
-        horizontal: 32,
-      ),
-      margin: EdgeInsets.fromLTRB(24, 24, 24, 0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.05),
-            offset: const Offset(0, 0),
-            blurRadius: 16,
-            spreadRadius: 8,
-          )
-        ]
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  "${price}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: (){},
-                child: Text("Buy")
-              )
-            ],
-          )
-        ],
-      )
-    );
+    if (course != null) {
+      if (course!.name != "loading") {
+        if (courseMember == false) {
+          return new Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 24,
+              horizontal: 32,
+            ),
+            margin: EdgeInsets.fromLTRB(24, 24, 24, 0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.05),
+                  offset: const Offset(0, 0),
+                  blurRadius: 16,
+                  spreadRadius: 8,
+                )
+              ]
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "${price}",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: (){},
+                      child: Text("Beli")
+                    )
+                  ],
+                )
+              ],
+            )
+          );
+        } else {
+          return new Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 24,
+              horizontal: 32,
+            ),
+            margin: EdgeInsets.fromLTRB(24, 24, 24, 0),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.05),
+                  offset: const Offset(0, 0),
+                  blurRadius: 16,
+                  spreadRadius: 8,
+                )
+              ]
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: (){},
+                        child: Text("Lanjut Belajar")
+                      )
+                    ),
+                  ],
+                )
+              ],
+            )
+          );
+        }
+      } else {
+        return SizedBox();
+      }
+    } else {
+      return SizedBox();
+    }
   }
 }
