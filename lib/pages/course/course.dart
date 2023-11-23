@@ -43,6 +43,20 @@ class _CoursePageState extends State<CoursePage> {
     });
   }
 
+  void filterMyCourseByCategory(String keyword) {
+    List<CourseModel> result = [];
+    if (keyword == "all") {
+      result.clear();
+      result = allCourses;
+    } else {
+      result.clear();
+      result = allCourses.where((element) => element.category_id!.contains(keyword)).toList();
+    }
+    setState(() {
+      courses = result;
+    });
+  }
+
   void findCourses(String keyword) {
     List<CourseModel> result = [];
     if (keyword.isEmpty) {
@@ -164,24 +178,46 @@ class _CoursePageState extends State<CoursePage> {
               padding: EdgeInsets.fromLTRB(24, 24, 0, 24),
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: List.generate(categories.length, (index){
-                  return Container(
+                children: [
+                  Container(
                     padding: EdgeInsets.only(right: 24),
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        filterMyCourseByCategory("all");
+                      },
                       child: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Icon(FontAwesomeIcons.mobile),
                           Text(
-                            categories[index].name,
+                            "All",
                             style: TextStyle(color: Colors.white),
                           )
                         ],
                       )
                     ),
-                  );
-                }),
+                  ),
+                  ...List.generate(categories.length, (index){
+                    return Container(
+                      padding: EdgeInsets.only(right: 24),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          filterMyCourseByCategory(categories[index].id);
+                        },
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Icon(FontAwesomeIcons.mobile),
+                            Text(
+                              categories[index].name,
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        )
+                      ),
+                    );
+                  })
+                ],
               ),
             ),
           ),

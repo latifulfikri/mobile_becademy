@@ -465,7 +465,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       modules[index].name,
                       [
                         ...List.generate(modules[index].materials!.length, (index2) {
-                          return materialItemWidget(0, modules[index].materials![index2].name);
+                          return materialItemWidget(0, modules[index].materials![index2].name,modules[index].slug,modules[index].materials![index2].slug);
                         }),
                       ]
                     );
@@ -484,7 +484,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                             )
                           ],
                         )
-                      ]
+                      ],
                     );
                   }
                 }),
@@ -599,7 +599,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     }
   }
 
-  Widget materialItemWidget(int status, String material)
+  Widget materialItemWidget(int status, String material, String moduleSlug, String materialSlug)
   {
     // Color statusColor = Colors.transparent;
     // IconData statusIcon = FontAwesomeIcons.solidCircle;
@@ -622,7 +622,21 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.secondary,
             ),
-            onPressed: (){},
+            onPressed: (){
+              if (courseMember == false) {
+                QuickAlert.show(
+                  context: context,
+                  type: QuickAlertType.warning,
+                  text: "You are not member in this course",
+                  confirmBtnColor: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+                  titleColor: Theme.of(context).colorScheme.secondary,
+                  textColor: Theme.of(context).colorScheme.secondary,
+                );
+              } else {
+                context.push("/course/${widget.courseSlug}/${moduleSlug}/${materialSlug}");
+              }
+            },
             child: Row(
               children: [
                 Container(

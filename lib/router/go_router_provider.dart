@@ -3,6 +3,7 @@ import 'package:becademy/pages/course/course.dart';
 import 'package:becademy/pages/course/courseDetail.dart';
 import 'package:becademy/pages/exception/emailVerificationSent.dart';
 import 'package:becademy/pages/mainPage.dart';
+import 'package:becademy/pages/material/material.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -60,7 +61,13 @@ class AppNavigation {
             name: "course.detail",
             builder: (context, state) =>
               CourseDetailPage(courseSlug: state.pathParameters['courseSlug']!)
-          )
+          ),
+          GoRoute(
+            path: ":courseSlug/:moduleSlug/:materialSlug",
+            name: "material.detail",
+            builder: (context, state) =>
+              MaterialsPage(courseSlug: state.pathParameters['courseSlug']!, moduleSlug: state.pathParameters['moduleSlug']!, materialSlug: state.pathParameters['materialSlug']!)
+          ),
         ]
       ),
     ]

@@ -1,0 +1,27 @@
+import 'dart:convert';
+
+import 'package:becademy/main.dart';
+import 'package:becademy/model/materialModel.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class MaterialController {
+  Future get(String courseSlug,String moduleSlug, String materialSlug) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+    String url = SERVER_API+"course/"+courseSlug+"/module/"+moduleSlug+"/material/"+materialSlug;
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Authorization':'Bearer ${jwt}'
+        }
+      );
+      Map<String, dynamic> res = jsonDecode(response.body);
+      return res;
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+}
