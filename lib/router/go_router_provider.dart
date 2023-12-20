@@ -3,6 +3,7 @@ import 'package:becademy/pages/course/course.dart';
 import 'package:becademy/pages/course/courseDetail.dart';
 import 'package:becademy/pages/course/courseRegister.dart';
 import 'package:becademy/pages/course/courseRegistered.dart';
+import 'package:becademy/pages/course/receipt.dart';
 import 'package:becademy/pages/exception/emailVerificationSent.dart';
 import 'package:becademy/pages/mainPage.dart';
 import 'package:becademy/pages/material/material.dart';
@@ -83,6 +84,11 @@ class AppNavigation {
               CourseRegisterPage(courseSlug: state.pathParameters['courseSlug']!)
           ),
         ]
+      ),
+      GoRoute(
+        path: "/invoice/:memberId",
+        name: "invoice.data",
+        builder:(context, state) => ReceiptPage(memberId: state.pathParameters['memberId']!),
       ),
     ]
   );

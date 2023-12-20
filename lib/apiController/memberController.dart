@@ -4,11 +4,11 @@ import 'package:becademy/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MaterialController {
-  Future get(String courseSlug,String moduleSlug, String materialSlug) async {
+class MemberController {
+  Future get(String memberId) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var jwt = sharedPreferences.getString('jwt');
-    String url = SERVER_API+"course/"+courseSlug+"/module/"+moduleSlug+"/material/"+materialSlug;
+    String url = SERVER_API+"my/invoice/"+memberId;
     try {
       final response = await http.get(
         Uri.parse(url),

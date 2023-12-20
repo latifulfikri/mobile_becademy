@@ -54,7 +54,11 @@ class CourseController {
       List<CourseModel> courses = [];
       res['data'].forEach((data) {
         Map<String,dynamic> mydata = data['course'];
+        mydata['payment_id'] = data['id'];
+        mydata['payment_method'] = data['payment_method'];
         mydata['payment_verified'] = data['payment_verified'];
+        mydata['payment_created_at'] = data['created_at'];
+        mydata['payment_updated_at'] = data['updated_at'];
         courses.add(CourseModel.fromJsonMyCourse(mydata));
       });
       return courses;

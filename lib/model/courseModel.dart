@@ -13,7 +13,11 @@ class CourseModel {
   final int is_active;
   final String created_at;
   final String updated_at;
+  String? payment_id;
+  String? payment_method;
   String? payment_verified;
+  String? payment_created_at;
+  String? payment_updated_at;
   String? category_id;
   CategoryModel? category;
   List<ModuleModel>? modules;
@@ -30,7 +34,11 @@ class CourseModel {
     required this.is_active,
     required this.created_at,
     required this.updated_at,
+    this.payment_id,
+    this.payment_method,
     this.payment_verified,
+    this.payment_created_at,
+    this.payment_updated_at,
     this.category_id,
     this.category,
     this.modules,
@@ -72,7 +80,11 @@ class CourseModel {
       min_storage: json['min_storage'],
       min_ram: json['min_ram'],
       is_active: json['is_active'],
+      payment_id: json['payment_id'],
+      payment_method: json['payment_method'],
       payment_verified: json['payment_verified'],
+      payment_created_at: json['payment_created_at'] ,
+      payment_updated_at: json['payment_updated_at'],
       created_at: json['created_at'],
       updated_at: json['updated_at'],
       category_id: json['category_id'],
