@@ -6,11 +6,13 @@ import 'package:becademy/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-var SERVER_API = "https://becademy.fikriyuwi.com/api/";
+var SERVER_API = "http://127.0.0.1:8000/api/";
+
 int openApp = 0;
 AccountModel? userLoginData;
 List<CourseModel> coursesData = [];
 List<CourseModel> myCoursesData = [];
+List<CourseModel> myActiveCoursesData = [];
 List<CategoryModel> categoriesData = [];
 
 void main() {

@@ -1,8 +1,7 @@
-import 'dart:ui';
-
 import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/main.dart';
+import 'package:becademy/model/categoryModel.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +9,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-class MainCoursePage extends StatefulWidget {
-  const MainCoursePage({super.key});
+class CourseRegisteredPage extends StatefulWidget {
+  const CourseRegisteredPage({super.key});
 
   @override
-  State<MainCoursePage> createState() => _MainCoursePageState();
+  State<CourseRegisteredPage> createState() => _CourseRegisteredPageState();
 }
 
-class _MainCoursePageState extends State<MainCoursePage> {
+class _CourseRegisteredPageState extends State<CourseRegisteredPage> {
+
   List<CourseModel> courses = [];
 
   CourseController courseApi = CourseController();
@@ -35,9 +35,9 @@ class _MainCoursePageState extends State<MainCoursePage> {
 
   Future<void> getCourses() async {
     coursesData.clear();
-    await courseApi.getMyActiveCourse().then((value) {
+    await courseApi.getMyCourse().then((value) {
       setState(() {
-        myActiveCoursesData = value;
+        myCoursesData = value;
         courses = value;
       });
     });
@@ -48,10 +48,10 @@ class _MainCoursePageState extends State<MainCoursePage> {
       List<CourseModel> result = [];
       if (keyword == "all") {
         result.clear();
-        result = myActiveCoursesData;
+        result = myCoursesData;
       } else {
         result.clear();
-        result = myActiveCoursesData.where((element) => element.category_id!.contains(keyword)).toList();
+        result = myCoursesData.where((element) => element.category_id!.contains(keyword)).toList();
       }
       setState(() {
         courses = result;
@@ -63,10 +63,10 @@ class _MainCoursePageState extends State<MainCoursePage> {
     List<CourseModel> result = [];
     if (keyword.isEmpty) {
       result.clear();
-      result = myActiveCoursesData;
+      result = myCoursesData;
     } else {
       result.clear();
-      result = myActiveCoursesData.where((element) =>
+      result = myCoursesData.where((element) =>
         element.name.toLowerCase().contains(keyword.toLowerCase())
       ).toList();
     }
@@ -84,7 +84,7 @@ class _MainCoursePageState extends State<MainCoursePage> {
       openApp = 1;
     } else {
       setState(() {
-        courses = myActiveCoursesData;
+        courses = myCoursesData;
       });
     }
     super.initState();
@@ -92,15 +92,30 @@ class _MainCoursePageState extends State<MainCoursePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          searchWidget(),
-          categoryWidget(),
-          Expanded(
-            child: iosWidget(),
-          )
-        ],
+    return Scaffold(
+      extendBodyBehindAppBar: false,
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          "Pesanan",
+          style: TextStyle(
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: Container(
+          child: Column(
+            children: [
+              searchWidget(),
+              categoryWidget(),
+              Expanded(
+                child: iosWidget(),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -361,7 +376,7 @@ class _MainCoursePageState extends State<MainCoursePage> {
                                 course.desc.length > 20 ? course.desc.substring(0,40)+"..." : course.desc,
                               ),
                               Padding(padding: EdgeInsets.only(bottom: 8)),
-                              courseDetail(16, 3)
+                              courseDetail(course.payment_verified)
                             ],
                           ),
                         ),
@@ -377,25 +392,34 @@ class _MainCoursePageState extends State<MainCoursePage> {
     );
   }
 
-  Widget courseDetail(int module, int time)
+  Widget courseDetail(String? payment_verified)
   {
+    Color bg = Colors.red;
+
+    if (payment_verified == "Success") {
+      bg = Colors.green;
+    } else if (payment_verified == "Process") {
+      bg = Colors.orange;
+    }
+
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              Icon(FontAwesomeIcons.solidBookmark,color: Theme.of(context).primaryColor),
-              Padding(padding: EdgeInsets.only(right: 4)),
-              Text("${module.toString()}"),
-              Padding(padding: EdgeInsets.only(right: 16)),
-              Icon(FontAwesomeIcons.solidClock,color: Theme.of(context).primaryColor,),
-              Padding(padding: EdgeInsets.only(right: 4)),
-              Text("${time.toString()}h"),
-            ],
+        Container(
+          padding: EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(8)
+          ),
+          child: Text(payment_verified.toString(),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold
+            ),
           ),
         )
       ],
     );
   }
+
 }

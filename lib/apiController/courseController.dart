@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:becademy/main.dart';
 import 'package:becademy/model/courseModel.dart';
@@ -52,6 +53,31 @@ class CourseController {
       Map<String,dynamic> res = jsonDecode(response.body);
       List<CourseModel> courses = [];
       res['data'].forEach((data) {
+        Map<String,dynamic> mydata = data['course'];
+        mydata['payment_verified'] = data['payment_verified'];
+        courses.add(CourseModel.fromJsonMyCourse(mydata));
+      });
+      return courses;
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+
+  Future getMyActiveCourse() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+
+    try {
+      final response = await http.get(
+        Uri.parse(SERVER_API+"my/course/active"),
+        headers: {
+          'Authorization':'Bearer ${jwt}'
+        }
+      );
+      Map<String,dynamic> res = jsonDecode(response.body);
+      List<CourseModel> courses = [];
+      res['data'].forEach((data) {
         courses.add(CourseModel.fromJsonMyCourse(data['course']));
       });
       return courses;
@@ -80,4 +106,25 @@ class CourseController {
     }
   }
 
+  Future registerMember(String slug, File paymentPicture, String paymentMethod) async {
+    // get file length
+    var length = await paymentPicture.length();
+
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+
+    try {
+      Map<String, String> headers = { "Authorization": "Bearer ${jwt}"};
+      var request = http.MultipartRequest('POST', Uri.parse(SERVER_API+"course/"+slug+"/member/register?_method=PUT"));
+      request.headers.addAll(headers);
+      request.fields['payment_method'] = paymentMethod;
+      request.files.add(http.MultipartFile.fromBytes('payment_picture', File(paymentPicture!.path).readAsBytesSync(),filename: paymentPicture!.path));
+      var res = await request.send();
+      var response = await http.Response.fromStream(res);
+      return response;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
 }

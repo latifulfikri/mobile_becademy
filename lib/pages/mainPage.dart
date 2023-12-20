@@ -47,7 +47,7 @@ class _MainPageState extends State<MainPage> {
 
   void getCategories() async {
     categoriesData.clear();
-    await categoryApi.get().then((value) {
+    await categoryApi.getMy().then((value) {
       categoriesData = value;
       setState(() {
         

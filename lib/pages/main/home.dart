@@ -24,7 +24,8 @@ class _MainHomePageState extends State<MainHomePage> {
 
   Future<void> getCategories() async {
     categoriesData.clear();
-    await categoryApi.get().then((value) {
+    await categoryApi.getMy().then((value) {
+      // print(value);
       setState(() {
         categoriesData = value;
       });
@@ -34,25 +35,28 @@ class _MainHomePageState extends State<MainHomePage> {
 
   Future<void> getCourses() async {
     coursesData.clear();
-    await courseApi.getMyCourse().then((value) {
+    await courseApi.getMyActiveCourse().then((value) {
       setState(() {
-        myCoursesData = value;
+        // print(value);
+        myActiveCoursesData = value;
         courses = value;
       });
     });
   }
 
-  void filterMyCourseByCategory(String keyword) {
-    List<CourseModel> result = [];
-    if (keyword == "all") {
-      result.clear();
-      result = myCoursesData;
-    } else {
-      result.clear();
-      result = myCoursesData.where((element) => element.category_id!.contains(keyword)).toList();
-    }
-    setState(() {
-      courses = result;
+  void filterMyCourseByCategory(String keyword) async {
+    await categoryApi.addUserCategoryJourney(keyword).then((value){
+      List<CourseModel> result = [];
+      if (keyword == "all") {
+        result.clear();
+        result = myActiveCoursesData;
+      } else {
+        result.clear();
+        result = myActiveCoursesData.where((element) => element.category_id!.contains(keyword)).toList();
+      }
+      setState(() {
+        courses = result;
+      });
     });
   }
 
@@ -60,10 +64,10 @@ class _MainHomePageState extends State<MainHomePage> {
     List<CourseModel> result = [];
     if (keyword.isEmpty) {
       result.clear();
-      result = myCoursesData;
+      result = myActiveCoursesData;
     } else {
       result.clear();
-      result = myCoursesData.where((element) =>
+      result = myActiveCoursesData.where((element) =>
         element.name.toLowerCase().contains(keyword.toLowerCase())
       ).toList();
     }
@@ -81,7 +85,7 @@ class _MainHomePageState extends State<MainHomePage> {
       openApp = 1;
     } else {
       setState(() {
-        courses = myCoursesData;
+        courses = myActiveCoursesData;
       });
     }
     // TODO: implement initState
@@ -353,6 +357,10 @@ class _MainHomePageState extends State<MainHomePage> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.tertiary,
                           borderRadius: BorderRadius.circular(16)
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset("assets/img/square-logo.png"),
                         ),
                       ),
                       SizedBox(

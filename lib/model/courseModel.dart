@@ -13,6 +13,7 @@ class CourseModel {
   final int is_active;
   final String created_at;
   final String updated_at;
+  String? payment_verified;
   String? category_id;
   CategoryModel? category;
   List<ModuleModel>? modules;
@@ -29,6 +30,7 @@ class CourseModel {
     required this.is_active,
     required this.created_at,
     required this.updated_at,
+    this.payment_verified,
     this.category_id,
     this.category,
     this.modules,
@@ -46,11 +48,11 @@ class CourseModel {
       name: json['name'],
       slug: json['slug'],
       desc: json['desc'],
-      price: int.parse(json['price']),
+      price: json['price'],
       min_processor: json['min_processor'],
-      min_storage: int.parse(json['min_storage']),
-      min_ram: int.parse(json['min_ram']),
-      is_active: int.parse(json['is_active']),
+      min_storage: json['min_storage'],
+      min_ram: json['min_ram'],
+      is_active: json['is_active'],
       created_at: json['created_at'],
       updated_at: json['updated_at'],
       category: CategoryModel.fromJson(json['category']),
@@ -65,11 +67,12 @@ class CourseModel {
       name: json['name'],
       slug: json['slug'],
       desc: json['desc'],
-      price: int.parse(json['price']),
+      price: json['price'],
       min_processor: json['min_processor'],
-      min_storage: int.parse(json['min_storage']),
-      min_ram: int.parse(json['min_ram']),
-      is_active: int.parse(json['is_active']),
+      min_storage: json['min_storage'],
+      min_ram: json['min_ram'],
+      is_active: json['is_active'],
+      payment_verified: json['payment_verified'],
       created_at: json['created_at'],
       updated_at: json['updated_at'],
       category_id: json['category_id'],

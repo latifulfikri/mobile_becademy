@@ -23,7 +23,7 @@ class _CoursePageState extends State<CoursePage> {
 
   Future<void> getCategories() async {
     categories.clear();
-    categories = await categoryApi.get();
+    categories = await categoryApi.getMy();
     setState(() {
       
     });
@@ -43,17 +43,19 @@ class _CoursePageState extends State<CoursePage> {
     });
   }
 
-  void filterMyCourseByCategory(String keyword) {
-    List<CourseModel> result = [];
-    if (keyword == "all") {
-      result.clear();
-      result = allCourses;
-    } else {
-      result.clear();
-      result = allCourses.where((element) => element.category_id!.contains(keyword)).toList();
-    }
-    setState(() {
-      courses = result;
+  void filterMyCourseByCategory(String keyword) async {
+    await categoryApi.addUserCategoryJourney(keyword).then((value) {
+      List<CourseModel> result = [];
+      if (keyword == "all") {
+        result.clear();
+        result = allCourses;
+      } else {
+        result.clear();
+        result = allCourses.where((element) => element.category_id!.contains(keyword)).toList();
+      }
+      setState(() {
+        courses = result;
+      });
     });
   }
 
@@ -254,6 +256,10 @@ class _CoursePageState extends State<CoursePage> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.tertiary,
                           borderRadius: BorderRadius.circular(16)
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset("assets/img/square-logo.png"),
                         ),
                       ),
                       SizedBox(

@@ -233,11 +233,11 @@ class _MainProfilePageState extends State<MainProfilePage> {
       ),
       child: Column(
         children: [
-          profileSettingButton(FontAwesomeIcons.solidUser, "Akun"),
-          profileSettingButton(FontAwesomeIcons.lock, "Password"),
-          profileSettingButton(FontAwesomeIcons.cartShopping, "Pesanan"),
-          profileSettingButton(FontAwesomeIcons.shield, "Keamanan"),
-          profileSettingButton(FontAwesomeIcons.solidClipboard, "Aturan & Layanan"),
+          profileSettingButton(FontAwesomeIcons.solidUser, "Akun","/course/registered"),
+          profileSettingButton(FontAwesomeIcons.lock, "Password","/course/registered"),
+          profileSettingButton(FontAwesomeIcons.cartShopping, "Pesanan","/course/registered"),
+          profileSettingButton(FontAwesomeIcons.shield, "Keamanan","/course/registered"),
+          profileSettingButton(FontAwesomeIcons.solidClipboard, "Aturan & Layanan","/course/registered"),
         ],
       ),
     );
@@ -318,12 +318,14 @@ class _MainProfilePageState extends State<MainProfilePage> {
     );
   }
 
-  Widget profileSettingButton(IconData icon, String text) {
+  Widget profileSettingButton(IconData icon, String text, String location) {
     return new TextButton(
       style: TextButton.styleFrom(
         foregroundColor: Theme.of(context).colorScheme.secondary,
       ),
-      onPressed: (){},
+      onPressed: (){
+        context.push(location);
+      },
       child: Row(
         children: [
           Container(

@@ -1,6 +1,8 @@
 import 'package:becademy/pages/auth/login.dart';
 import 'package:becademy/pages/course/course.dart';
 import 'package:becademy/pages/course/courseDetail.dart';
+import 'package:becademy/pages/course/courseRegister.dart';
+import 'package:becademy/pages/course/courseRegistered.dart';
 import 'package:becademy/pages/exception/emailVerificationSent.dart';
 import 'package:becademy/pages/mainPage.dart';
 import 'package:becademy/pages/material/material.dart';
@@ -57,6 +59,12 @@ class AppNavigation {
         builder: (context, state) => CoursePage(),
         routes: [
           GoRoute(
+            path: "registered",
+            name: "course.registered",
+            builder: (context, state) =>
+              CourseRegisteredPage()
+          ),
+          GoRoute(
             path: ":courseSlug",
             name: "course.detail",
             builder: (context, state) =>
@@ -67,6 +75,12 @@ class AppNavigation {
             name: "material.detail",
             builder: (context, state) =>
               MaterialsPage(courseSlug: state.pathParameters['courseSlug']!, moduleSlug: state.pathParameters['moduleSlug']!, materialSlug: state.pathParameters['materialSlug']!)
+          ),
+          GoRoute(
+            path: ":courseSlug/register",
+            name: "course.register",
+            builder: (context, state) =>
+              CourseRegisterPage(courseSlug: state.pathParameters['courseSlug']!)
           ),
         ]
       ),

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:becademy/apiController/categoryController.dart';
 import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/apiController/moduleController.dart';
 import 'package:becademy/model/categoryModel.dart';
@@ -28,7 +29,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   
   CourseModel? course = CourseModel(id: "loading", name: "loading", slug: "loading", desc: "loading", price: 0, min_processor: "loading", min_storage: 0, min_ram: 0, is_active: 0, created_at: "loading", updated_at: "loading", category: CategoryModel(id: "loading", name: "loading", slug: "loading", icon: "loading", color: "loading", created_at: "loading", updated_at: "loading"));
   bool courseMember = false;
-
+  
   Widget courseView() {
     if (course != null) {
       if (course!.name != "loading") {
@@ -46,6 +47,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   var price = "loading";
 
   CourseController courseApi = CourseController();
+  CategoryController categoryApi = CategoryController();
   ModuleController moduleApi = ModuleController();
   
   Future<void> getCourse() async {
@@ -68,6 +70,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         
       });
     } else {
+      addUserCategoryJourney(res['data']['category_id']);
       isMember(res['data']['slug']);
       getModules(res['data']['slug']);
       course = CourseModel.fromJson(res['data']);
@@ -114,6 +117,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
+  Future<void> addUserCategoryJourney(String category_id) async {
+    await categoryApi.addUserCategoryJourney(category_id);
+  }
   @override
   void initState() {
     getCourse();
@@ -129,7 +135,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          "Kelas",
+          course==null? "Kelas" : course!.name,
           style: TextStyle(
             fontWeight: FontWeight.bold
           ),
@@ -274,6 +280,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(24)
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset("assets/img/square-logo.png"),
             ),
           )
         )
@@ -849,7 +859,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        context.push("/course/"+course!.slug+"/register");
+                      },
                       child: Text("Beli")
                     )
                   ],
