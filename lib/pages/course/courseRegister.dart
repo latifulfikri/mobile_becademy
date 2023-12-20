@@ -393,7 +393,8 @@ class _CourseRegisterPageState extends State<CourseRegisterPage> {
                                           titleColor: Theme.of(context).colorScheme.secondary,
                                           textColor: Theme.of(context).colorScheme.secondary,
                                           onConfirmBtnTap: () {
-                                            context.go('/');
+                                            context.pop();
+                                            context.push('/course/registered');
                                           },
                                         );
                                       } else {

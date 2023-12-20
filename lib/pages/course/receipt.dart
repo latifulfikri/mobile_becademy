@@ -349,7 +349,8 @@ class _ReceiptPageState extends State<ReceiptPage> {
       child: Text(course!.category!.name,
         style: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.bold
+          fontWeight: FontWeight.bold,
+          color: Colors.white
         ),
       ),
     );

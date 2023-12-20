@@ -111,9 +111,6 @@ class CourseController {
   }
 
   Future registerMember(String slug, File paymentPicture, String paymentMethod) async {
-    // get file length
-    var length = await paymentPicture.length();
-
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var jwt = sharedPreferences.getString('jwt');
 
