@@ -697,6 +697,19 @@ class _AccountPageState extends State<AccountPage> {
                         context.pop();
                       },
                     );
+                  } else {
+                    QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      text: value['message'],
+                      confirmBtnColor: Theme.of(context).primaryColor,
+                      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+                      titleColor: Theme.of(context).colorScheme.secondary,
+                      textColor: Theme.of(context).colorScheme.secondary,
+                      onConfirmBtnTap: () {
+                        context.pop();
+                      },
+                    );
                   }
                 });
                 setState(() {

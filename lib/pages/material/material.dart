@@ -82,8 +82,8 @@ class _MaterialsPageState extends State<MaterialsPage> {
     }
   }
 
-  Future<void> getForum(String slug) async {
-    List<ForumModel>? result = await forumApi.get(slug);
+  Future<void> getForum(String courseSlug, String materialSlug) async {
+    List<ForumModel>? result = await forumApi.get(courseSlug, materialSlug);
     forums.clear();
     if (result != null) {
       forums = result;
@@ -97,7 +97,10 @@ class _MaterialsPageState extends State<MaterialsPage> {
     await materialApi.get(widget.courseSlug, widget.moduleSlug, slug).then((value){
       if (value['status'] == 200) {
         material = MaterialModel.fromJson(value['data']);
-        getForum(course!.slug);
+        setState(() {
+          
+        });
+        getForum(course!.slug, material!.slug);
       } else {
         QuickAlert.show(
           context: context,
@@ -119,6 +122,39 @@ class _MaterialsPageState extends State<MaterialsPage> {
     });
   }
 
+  Future<void> sendForum(String message) async {
+    await forumApi.addNewForum(course!.slug, material!.slug, message).then((value){
+      if (value['status'] == 201) {
+        getForum(course!.slug, material!.slug);
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.success,
+          text: "${value['message']}",
+          confirmBtnColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+          titleColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          onConfirmBtnTap: (){
+            context.pop();
+          },
+        );
+      } else {
+        QuickAlert.show(
+          context: context,
+          type: QuickAlertType.warning,
+          text: "${value['message']}",
+          confirmBtnColor: Theme.of(context).primaryColor,
+          backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+          titleColor: Theme.of(context).colorScheme.secondary,
+          textColor: Theme.of(context).colorScheme.secondary,
+          onConfirmBtnTap: (){
+            context.pop();
+          },
+        );
+      }
+    });
+  }
+
   @override
   void initState() {
     slug = widget.materialSlug;
@@ -130,14 +166,14 @@ class _MaterialsPageState extends State<MaterialsPage> {
   }
 
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
         title: Text(
           material != null ? material!.name : "Material",
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold
           ),
         ),
@@ -145,7 +181,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
           Container()
         ],
       ),
-      body: new Stack(
+      body: Stack(
         children: [
           MainBody(),
           Column(
@@ -198,7 +234,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                     onPressed: (){
                       context.pop();
                     },
-                    child: Row(
+                    child: const Row(
                       children: [
                         Icon(FontAwesomeIcons.chevronLeft),
                         Text("Kembali"),
@@ -265,7 +301,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
           padding: EdgeInsets.all(24),
           child: Text(
             course != null ? course!.name : "Loading",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold
             ),
@@ -277,7 +313,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
   }
 
   Widget BottomNav() {
-    return new Container(
+    return Container(
       padding: EdgeInsets.symmetric(
         vertical: 24,
         horizontal: 32,
@@ -541,7 +577,14 @@ class _MaterialsPageState extends State<MaterialsPage> {
           ForumForm(),
           SizedBox(height: 16),
           ...List.generate(forums.length, (index) {
-            return ForumItem(forums[index]);
+            return Container(
+              child: Column(
+                children: [
+                  ForumItem(forums[index]),
+                  SizedBox(height: 16),
+                ],
+              ),
+            );
           })
         ],
       ),
@@ -605,6 +648,8 @@ class _MaterialsPageState extends State<MaterialsPage> {
               onPressed: () async {
                 if (_forumTextController.text.trim().isEmpty ) {
                   print("empty bro");
+                } else {
+                  sendForum(_forumTextController.text.toString());
                 }
                 // openApp = 0;
                 // await loginAuth(_emailController.text, _passwordController.text);
