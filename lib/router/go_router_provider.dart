@@ -1,4 +1,5 @@
 import 'package:becademy/pages/auth/account.dart';
+import 'package:becademy/pages/auth/changePassword.dart';
 import 'package:becademy/pages/auth/login.dart';
 import 'package:becademy/pages/course/course.dart';
 import 'package:becademy/pages/course/courseDetail.dart';
@@ -95,6 +96,13 @@ class AppNavigation {
         path: "/account",
         name: "account",
         builder: (context, state) => AccountPage(),
+        routes: [
+          GoRoute(
+            path: "password",
+            name: "account.password",
+            builder:(context, state) => ChangePasswordPage()
+          ),
+        ]
       )
     ]
   );

@@ -238,7 +238,7 @@ class _MainProfilePageState extends State<MainProfilePage> {
       child: Column(
         children: [
           profileSettingButton(FontAwesomeIcons.solidUser, "Akun","/account"),
-          profileSettingButton(FontAwesomeIcons.lock, "Password","/course/registered"),
+          profileSettingButton(FontAwesomeIcons.lock, "Password","/account/password"),
           profileSettingButton(FontAwesomeIcons.cartShopping, "Pesanan","/course/registered"),
           profileSettingButton(FontAwesomeIcons.shield, "Keamanan","/course/registered"),
           profileSettingButton(FontAwesomeIcons.solidClipboard, "Aturan & Layanan","/course/registered"),

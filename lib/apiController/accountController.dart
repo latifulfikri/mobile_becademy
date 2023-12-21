@@ -52,4 +52,28 @@ class AccountController {
       }
     });
   }
+
+  Future changePassword(String password, String newPassword, String newPasswordConfirmation) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var jwt = sharedPreferences.getString('jwt');
+    String url = SERVER_API+"my/password/update";
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Authorization':'Bearer ${jwt}'
+        },
+        body: {
+          "password":password,
+          "new_password":newPassword,
+          "new_password_confirmation":newPasswordConfirmation,
+        }
+      );
+      Map<String, dynamic> res = jsonDecode(response.body);
+      return res;
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
 }
