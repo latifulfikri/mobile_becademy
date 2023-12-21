@@ -195,6 +195,10 @@ class _MainProfilePageState extends State<MainProfilePage> {
                   color: Theme.of(context).colorScheme.tertiary,
                   borderRadius: BorderRadius.circular(70)
                 ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(70),
+                  child: Image.network(SERVER_WEB+"account/img/"+userLoginData!.picture),
+                ),
               )
             ],
           ),

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 var SERVER_API = "http://127.0.0.1:8000/api/";
+var SERVER_WEB = "http://127.0.0.1:8000/";
 
 int openApp = 0;
 AccountModel? userLoginData;
