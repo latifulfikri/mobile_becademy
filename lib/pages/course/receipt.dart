@@ -184,7 +184,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.tertiaryContainer,
-                borderRadius: BorderRadius.circular(16)
+                borderRadius: BorderRadius.circular(24)
               ),
               padding: EdgeInsets.all(24),
               child: Column(
@@ -264,7 +264,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
         children: [
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(16)
@@ -402,7 +402,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.tertiaryContainer,
-                borderRadius: BorderRadius.circular(16)
+                borderRadius: BorderRadius.circular(24)
               ),
               padding: EdgeInsets.all(24),
               child: Column(

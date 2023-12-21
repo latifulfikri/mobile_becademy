@@ -1,3 +1,4 @@
+import 'package:becademy/pages/auth/account.dart';
 import 'package:becademy/pages/auth/login.dart';
 import 'package:becademy/pages/course/course.dart';
 import 'package:becademy/pages/course/courseDetail.dart';
@@ -90,6 +91,11 @@ class AppNavigation {
         name: "invoice.data",
         builder:(context, state) => ReceiptPage(memberId: state.pathParameters['memberId']!),
       ),
+      GoRoute(
+        path: "/account",
+        name: "account",
+        builder: (context, state) => AccountPage(),
+      )
     ]
   );
 }
