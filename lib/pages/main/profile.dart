@@ -243,8 +243,8 @@ class _MainProfilePageState extends State<MainProfilePage> {
           profileSettingButton(FontAwesomeIcons.solidUser, "Akun","/account"),
           profileSettingButton(FontAwesomeIcons.lock, "Password","/account/password"),
           profileSettingButton(FontAwesomeIcons.cartShopping, "Pesanan","/course/registered"),
-          profileSettingButton(FontAwesomeIcons.shield, "Keamanan","/course/registered"),
-          profileSettingButton(FontAwesomeIcons.solidClipboard, "Aturan & Layanan","/course/registered"),
+          profileSettingButton(FontAwesomeIcons.shield, "Keamanan","/security"),
+          profileSettingButton(FontAwesomeIcons.solidClipboard, "Aturan & Layanan","/tnc"),
         ],
       ),
     );

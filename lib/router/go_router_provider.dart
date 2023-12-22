@@ -1,3 +1,5 @@
+import 'package:becademy/pages/about/security.dart';
+import 'package:becademy/pages/about/termsAndCondition.dart';
 import 'package:becademy/pages/auth/account.dart';
 import 'package:becademy/pages/auth/changePassword.dart';
 import 'package:becademy/pages/auth/login.dart';
@@ -103,6 +105,16 @@ class AppNavigation {
             builder:(context, state) => ChangePasswordPage()
           ),
         ]
+      ),
+      GoRoute(
+        path: "/tnc",
+        name: "tnc",
+        builder: (context, state) => TermsAndConditionPage(),
+      ),
+      GoRoute(
+        path: "/security",
+        name: "security",
+        builder: (context, state) => SecurityPage(),
       )
     ]
   );
