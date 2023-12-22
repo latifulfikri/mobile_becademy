@@ -121,15 +121,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> loginAuth(String email, String password) async {
-    var res = await http.post(
+    await http.post(
       Uri.parse(SERVER_API+"login"),
       body: {
         "email": email,
         "password": password,
       }
-    );
-      Map<String,dynamic> body = jsonDecode(res.body);
-      if (res.statusCode == 200) {
+    ).then((value) async {
+      Map<String,dynamic> body = jsonDecode(value.body);
+      if (value.statusCode == 200) {
         // secstorage.write(key: 'jwt', value: body['access_token']);
         SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
         sharedPreferences.setString('jwt', body['access_token']);
@@ -153,6 +153,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       }
+    });
   }
 
   void displayDialog(BuildContext context, QuickAlertType type, String text) {

@@ -2,6 +2,7 @@ import 'package:becademy/apiController/courseController.dart';
 import 'package:becademy/apiController/forumController.dart';
 import 'package:becademy/apiController/materialController.dart';
 import 'package:becademy/apiController/moduleController.dart';
+import 'package:becademy/main.dart';
 import 'package:becademy/model/courseModel.dart';
 import 'package:becademy/model/forumModel.dart';
 import 'package:becademy/model/materialModel.dart';
@@ -686,8 +687,11 @@ class _MaterialsPageState extends State<MaterialsPage> {
               borderRadius: BorderRadius.circular(21)
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(21),
-              child: Image.asset("assets/img/square-logo.png"),
+              borderRadius: BorderRadius.circular(70),
+              child: Image.network(
+                SERVER_WEB+"account/img/"+forum.account.picture,
+                fit: BoxFit.cover
+              ),
             ),
           ),
           Expanded(

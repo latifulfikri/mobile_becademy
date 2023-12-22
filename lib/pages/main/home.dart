@@ -133,63 +133,88 @@ class _MainHomePageState extends State<MainHomePage> {
             ),
             margin: EdgeInsets.fromLTRB(24, 0, 24, 0),
             padding: EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Dasar Pemrograman Menggunakan Bahasa C",
-                  style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18
-                  ),
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 24)),
-                RichText(
-                  text: TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(text: "Selesaikan "),
-                      TextSpan(
-                        text: "Course 3",
-                        style: const TextStyle(fontWeight: FontWeight.bold)
-                      ),
-                    ]
-                  )
-                ),
-                RichText(
-                  text: TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(text: "Sebelum "),
-                      TextSpan(
-                        text: "31 Aug 2023",
-                        style: const TextStyle(fontWeight: FontWeight.bold)
-                      ),
-                    ]
-                  )
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 16)),
-                ElevatedButton(
-                  onPressed: () {
-                    GoRouter.of(context).push("/course");
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Theme.of(context).primaryColor,
-                  ),
-                  child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Icon(FontAwesomeIcons.play),
-                      SizedBox(width: 16,),
-                      Text("Lanjut Belajar")
-                    ],
-                  )
-                ),
-              ]
-            ),
+            child: myActiveCoursesData.length > 0 ? latestActiveCourse() : noActiveCourse(),
           ),
         )
       ],
+    );
+  }
+
+  Widget noActiveCourse() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Kamu belum terdaftar dalam kelas manapun",
+          style: TextStyle(
+            color: Color.fromRGBO(255, 255, 255, 1),
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+          ),
+        ),
+        Padding(padding: EdgeInsets.only(bottom: 24)),
+        Text("Kamu bisa klik tombol di bawah dan temukan kelas yang kamu minati",
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
+        Padding(padding: EdgeInsets.only(bottom: 16)),
+        ElevatedButton(
+          onPressed: () {
+            GoRouter.of(context).push("/course");
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Theme.of(context).primaryColor,
+          ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text("Lihat daftar kelas")
+            ],
+          )
+        ),
+      ]
+    );
+  }
+
+  Widget latestActiveCourse() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          myActiveCoursesData[myActiveCoursesData.length-1].name,
+          style: TextStyle(
+            color: Color.fromRGBO(255, 255, 255, 1),
+            fontWeight: FontWeight.bold,
+            fontSize: 18
+          ),
+        ),
+        Padding(padding: EdgeInsets.only(bottom: 24)),
+        Text("Udah bersin kelas ini? kalo belum yuk lanjut",
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
+        Padding(padding: EdgeInsets.only(bottom: 16)),
+        ElevatedButton(
+          onPressed: () {
+            GoRouter.of(context).push("/course/"+myActiveCoursesData[myActiveCoursesData.length-1].slug);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Theme.of(context).primaryColor,
+          ),
+          child: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Icon(FontAwesomeIcons.play),
+              SizedBox(width: 16,),
+              Text("Lanjut Belajar")
+            ],
+          )
+        ),
+      ]
     );
   }
 

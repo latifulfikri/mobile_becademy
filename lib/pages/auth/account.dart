@@ -280,7 +280,10 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(70),
-                  child: Image.network(SERVER_WEB+"account/img/"+userLoginData!.picture),
+                  child: Image.network(
+                    SERVER_WEB+"account/img/"+userLoginData!.picture,
+                    fit: BoxFit.cover
+                  ),
                 ),
               )
             ],
